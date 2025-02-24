@@ -1,13 +1,15 @@
-from flask  import Flask
+from flask import Flask,render_template,request
+
+
 
 app =  Flask(__name__)
 
 
 @app.route("/")
 def home():
-    return str("Hello World")   
+    return render_template('index.html')
 
-@app.route("/members")
+@app.route("/areas")
 def members():
 
     return
