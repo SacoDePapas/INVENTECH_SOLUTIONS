@@ -37,11 +37,9 @@ const Register = () => {
   
 
 
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
@@ -59,6 +57,7 @@ const Register = () => {
 
     setSuccess(true);
   };
+  
 
   return (
     <div className="container">
@@ -89,7 +88,7 @@ const Register = () => {
           <input
             type="password"
             name="password"
-            value={formData.email}
+            value={formData.password}
             onChange={handleChange}
           />
         </div>
@@ -103,12 +102,19 @@ const Register = () => {
           />
           <button type="button" onClick={handleSearch}>Search</button>
         </div>
-        {dropdownVisible && (
-          <ul className="dropdown">
-            {organizations.map((org, index) => (
-              <li key={index}>{org.name}</li>
-            ))}
-          </ul> 
+        {dropdownVisible && organizations.length > 0 && (
+          <div className="dropdown">
+            <select
+              name="Id_facultad"
+              value={formData.Id_facultad}
+              onChange={handleChange}
+            >
+              <option value="">Select an Organization</option>
+              {organizations.map((org, index) => (
+                <option key={index} value={org.id}>{org.name}</option>
+              ))}
+            </select>
+          </div>
         )}
         <button type="submit">Register</button>
       </form>

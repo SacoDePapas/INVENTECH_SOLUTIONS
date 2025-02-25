@@ -2,6 +2,7 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 from flask import Flask,request,jsonify
+from flask_cors import CORS # type: ignore
 
 #CREATE
 
@@ -61,6 +62,7 @@ load_dotenv()
 
 
 app =  Flask(__name__)
+CORS(app)
 url=os.getenv("DATABASE_URL")
 connection=psycopg2.connect(url)
 
@@ -100,10 +102,10 @@ def search_org():
 
     with connection.cursor() as cursor:
         try:
-            cursor.execute("SELECT name FROM organizations WHERE code = %s", (organization_code,))
-            orgs = cursor.fetchall()
-            if orgs:
-                return jsonify([{"name": org[0]} for org in orgs])  # Send JSON list
+            cursor.execute("SELECT nombre,id FROM Facultad WHERE id_organizacion = %s", (organization_code,))
+            facultades = cursor.fetchall()
+            if facultades:
+                return jsonify([{"name": org[0],"id":org[1]} for org in facultades])  # Send JSON list
             else:
                 return jsonify([])  # Send empty list if no matches
         except Exception as e:
