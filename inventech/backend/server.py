@@ -1,7 +1,7 @@
 import os
 import psycopg2
 from dotenv import load_dotenv
-from flask import Flask,request
+from flask import Flask,request,jsonify
 
 #CREATE
 
@@ -76,6 +76,39 @@ def members():
 @app.post("/api/new-user")
 def create_user():
     data=request.get_json()
+    name=data['nombre']
+    Id=data['id']
+    password=data['password']
+    Id_facultad=data['facultad']
+    Rol=data['rol']
+    Status=data['Status']
+    with connection.cursor() as cursor:
+        cursor.execute(INSERT_USER,())
+
+@app.route('/users')
+def show_users():
+    with connection.cursor() as cursor:
+        cursor.execute(SELECT_USUARIOS)
+        users = cursor.fetchall()   
+    return {"users":users}
+
+@app.route("/search_org", methods=["GET"])
+def search_org():
+    organization_code = request.args.get("code")  # Get query parameter
+    if not organization_code:
+        return jsonify({"error": "No organization code provided"}), 400
+
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute("SELECT name FROM organizations WHERE code = %s", (organization_code,))
+            orgs = cursor.fetchall()
+            if orgs:
+                return jsonify([{"name": org[0]} for org in orgs])  # Send JSON list
+            else:
+                return jsonify([])  # Send empty list if no matches
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
