@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask,request,jsonify
 from flask_cors import CORS 
 import sys
+import logging
 
 #CREATE
 
@@ -22,8 +23,11 @@ INSERT_RENTAS =("INSERT INTO Rentas (Id_usuario,Id_encargado,Salon,Id_Area,Statu
 
 #Facultad/Areas
 SELECT_FACULTAD=("""SELECT * FROM Facultad """)
+SELECT_FACULTAD_UNO=("""SELECT * FROM Facultad WHERE id = (%s)""")
 SELECT_AREAS=("""SELECT * FROM Areas """)
+SELECT_AREAS_UNO=("""SELECT * FROM Areas WHERE id = (%s)""")
 SELECT_ORGANIZACION=("""SELECT * FROM organizaciones """)
+SELECT_AREAS_UNO=("""SELECT * FROM Areas WHERE id = (%s)""")
 #-----------------------------------------------------------------------------------------------#
 #Usuario/Objeto/Rentas
 SELECT_USUARIOS=("""SELECT * FROM Usuarios  """)
@@ -64,7 +68,7 @@ load_dotenv()
 
 
 app =  Flask(__name__)
-CORS(app)
+CORS(app, origins=["http://localhost:3000"])
 url=os.getenv("DATABASE_URL")
 connection=psycopg2.connect(url)
 
@@ -99,33 +103,140 @@ def search_org():
             else:
                 return jsonify([])  # Send empty list if no matches
         except Exception as e:
-            return jsonify({"error": str(e)}), 
+            return jsonify({"error": str(e)})
+
+
+@app.route("/create_facultad",methods=["POST"])
+def create_facultad():
+    data=request.get_json()
+    if not data:
+        app.logger.info(f"No data")
+        return jsonify({"error": "No data provided"}), 400
+
+    with connection.cursor() as cursor:
+        nombre_facultad = data.get('nombre')
+        id_org = data.get('org-code')
+        try:
+            cursor.execute(SELECT_FACULTAD_UNO,(id_org,))
+            Exist=cursor.fetchone()
+            if not Exist:
+                cursor.execute(INSERT_FACULTAD,(id_org,nombre_facultad))
+                connection.commit()
+                return {"Success":"Se creo la facultad"}     
+            return {"Error":"Existe la facultad"}
+        except Exception as e :
+            return jsonify({"error": str(e)})
+    return {"Nose":"nose"}
+
+@app.route("/delete_facultad",methods=["POST"])
+def delete_facultad():
+    data=request.get_json()
+    if not data:
+        app.logger.info(f"No data")
+        return jsonify({"error": "No data provided"}), 400
+
+    with connection.cursor() as cursor:
+        id_txt = data.get('Id')
+        id = int(id_txt)
+        try:
+            cursor.execute(DELTE_FACULTAD,(id))
+            cursor.commit()
+        except Exception as e :
+            return jsonify({"error": str(e)})
+    return {"Nose":"nose"}
+
+@app.route("/update_facultad",methods=["POST"])
+def update_facultad():
+    data=request.get_json()
+    if not data:
+        app.logger.info(f"No data")
+        return jsonify({"error": "No data provided"}), 400
+
+    with connection.cursor() as cursor:
+        id_txt = data.get('Id')
+        id = int(id_txt)
+        nombre = data.get('name')
+        id_org = data.get('id-org')
+        try:
+            cursor.execute(UPDATE_FACULTAD,(nombre,id_org,id))
+            cursor.commit()
+        except Exception as e :
+            return jsonify({"error": str(e)})
+    return {"Nose":"nose"}
+
+
+
+
+
+
 
 @app.route("/create_user",methods=["POST"])
 def create_user():
     data=request.get_json()
     if not data:
+        app.logger.info(f"No data")
         return jsonify({"error": "No data provided"}), 400
+
     with connection.cursor() as cursor:
-        id = data.get('Id')
+        id_txt = data.get('Id')
+        id = int(id_txt)
         nombre = data.get('name')
         password = data.get('password')
-        id_facultad = data.get('Id_facultad')
+        id_facultad_txt = data.get('Id_facultad')
+        id_facultad=int(id_facultad_txt)
         Status= "Activo"
+        Rol = "User"
         try:
-            #Exist=cursor.execute(SELECT_USUARIOS_UNO,(id))
-            Exist=""
-            if Exist.len() == 0:
-                return str("This user already exist"    )
-            else:
-                return print("aqui es el error")
-                #cursor.execute(INSERT_USER,(id,password,nombre,id_facultad,"",Status))
+            cursor.execute(SELECT_USUARIOS_UNO,(id,))
+            Exist=cursor.fetchone()
+            if not Exist:
+                cursor.execute(INSERT_USER,(id,password,nombre,id_facultad,Rol,Status))
+                connection.commit()
+                return {"Success":"Se creo el Usuario"}     
+            return {"Error":"Existe el usuario"}
         except Exception as e :
-            return jsonify({"error": str(e)}),
-    print(f"{id}  -----{id_facultad}------{nombre}", file=sys.stderr)
+            return jsonify({"error": str(e)})
+    return {"Nose":"nose"}
 
-    return id
+@app.route("/delete_user",methods=["POST"])
+def delete_user():
+    data=request.get_json()
+    if not data:
+        app.logger.info(f"No data")
+        return jsonify({"error": "No data provided"}), 400
 
+    with connection.cursor() as cursor:
+        id_txt = data.get('Id')
+        id = int(id_txt)
+        try:
+            cursor.execute(DELETE_USUARIO,(id))
+            cursor.commit()
+        except Exception as e :
+            return jsonify({"error": str(e)})
+    return {"Nose":"nose"}
+
+@app.route("/update_user",methods=["POST"])
+def update_user():
+    data=request.get_json()
+    if not data:
+        app.logger.info(f"No data")
+        return jsonify({"error": "No data provided"}), 400
+
+    with connection.cursor() as cursor:
+        id_txt = data.get('Id')
+        id = int(id_txt)
+        nombre = data.get('name')
+
+        id_facultad_txt = data.get('Id_facultad')
+        id_facultad=int(id_facultad_txt)
+        Status= data.get('Status')
+        Rol = data.get('Rol')
+        try:
+            cursor.execute(UPDATE_USUARIO,(id,nombre,id_facultad,Rol,Status,id))
+            cursor.commit()
+        except Exception as e :
+            return jsonify({"error": str(e)})
+    return {"Nose":"nose"}
 
 if __name__ == "__main__":
     app.run(debug=True)
