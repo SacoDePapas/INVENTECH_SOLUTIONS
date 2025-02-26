@@ -383,7 +383,10 @@ def update_objeto():
             return jsonify({"error": str(e)})
     return {"Nose":"nose"}
 
-INSERT_RENTAS =("INSERT INTO Rentas (Id_usuario,Id_encargado,Salon,Id_Area,Status) VALUES (%s,%s,%s,%s,%s);")
+
+
+
+
 #Rentas
 @app.route("/create_rentas",methods=["POST"])
 def create_rentas():
