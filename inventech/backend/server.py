@@ -2,7 +2,8 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 from flask import Flask,request,jsonify
-from flask_cors import CORS # type: ignore
+from flask_cors import CORS 
+import sys
 
 #CREATE
 
@@ -25,7 +26,8 @@ SELECT_AREAS=("""SELECT * FROM Areas """)
 SELECT_ORGANIZACION=("""SELECT * FROM organizaciones """)
 #-----------------------------------------------------------------------------------------------#
 #Usuario/Objeto/Rentas
-SELECT_USUARIOS=("""SELECT * FROM Usuarios """)
+SELECT_USUARIOS=("""SELECT * FROM Usuarios  """)
+SELECT_USUARIOS_UNO=("""SELECT * FROM Usuarios  WHERE Id = (%s)""")
 SELECT_OBJETOS=("""SELECT * FROM Objetos """)
 SELECT_RENTAS=("""SELECT * FROM Rentas """)
 
@@ -75,18 +77,6 @@ def members():
 
     return
 
-@app.post("/api/new-user")
-def create_user():
-    data=request.get_json()
-    name=data['nombre']
-    Id=data['id']
-    password=data['password']
-    Id_facultad=data['facultad']
-    Rol=data['rol']
-    Status=data['Status']
-    with connection.cursor() as cursor:
-        cursor.execute(INSERT_USER,())
-
 @app.route('/users')
 def show_users():
     with connection.cursor() as cursor:
@@ -109,7 +99,32 @@ def search_org():
             else:
                 return jsonify([])  # Send empty list if no matches
         except Exception as e:
-            return jsonify({"error": str(e)}), 500
+            return jsonify({"error": str(e)}), 
+
+@app.route("/create_user",methods=["POST"])
+def create_user():
+    data=request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+    with connection.cursor() as cursor:
+        id = data.get('Id')
+        nombre = data.get('name')
+        password = data.get('password')
+        id_facultad = data.get('Id_facultad')
+        Status= "Activo"
+        try:
+            #Exist=cursor.execute(SELECT_USUARIOS_UNO,(id))
+            Exist=""
+            if Exist.len() == 0:
+                return str("This user already exist"    )
+            else:
+                return print("aqui es el error")
+                #cursor.execute(INSERT_USER,(id,password,nombre,id_facultad,"",Status))
+        except Exception as e :
+            return jsonify({"error": str(e)}),
+    print(f"{id}  -----{id_facultad}------{nombre}", file=sys.stderr)
+
+    return id
 
 
 if __name__ == "__main__":

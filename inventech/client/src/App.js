@@ -40,24 +40,34 @@ const Register = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess(false);
 
-    if (!formData.name || !formData.Id || !formData.password) {
-      setError("All fields are required");
-      return;
+    try {
+      const response = await fetch('http://localhost:5000/create_user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+
+        // Store the token or session identifier (e.g., in local storage)
+        localStorage.setItem('token', result.token); // Assuming the API returns a token
+        localStorage.setItem('user', JSON.stringify(result.user)); // Store user data if needed
+
+      } else {
+        console.error('Failed to create user:', response.statusText);
+        alert('Failed to create user. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('An error occurred. Please try again.');
     }
-
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      return;
-    }
-
-    setSuccess(true);
   };
-  
 
   return (
     <div className="container">
