@@ -6,6 +6,11 @@ from flask_cors import CORS
 import sys
 import logging
 
+
+#Esta es una prueba
+
+
+
 #CREATE
 
 #Facultad/Areas
