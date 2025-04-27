@@ -6,6 +6,11 @@ from flask_cors import CORS
 import sys
 import logging
 
+
+#Esta es una prueba
+
+
+
 #CREATE
 
 #Facultad/Areas
@@ -70,7 +75,7 @@ load_dotenv()
 
 
 app =  Flask(__name__)
-CORS(app, origins=["http://localhost:3000"])
+CORS(app)
 url=os.getenv("DATABASE_URL")
 connection=psycopg2.connect(url)
 
