@@ -1,0 +1,118 @@
+.popupDetalles {
+    overflow-y: auto;
+}
+
+.popupDetalles .opcionesContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: 0.3s;
+    margin-top: 60px;
+}
+
+/* .popupDetalles .opcionesContainer .optionContainer {
+    margin: 20px 0;
+} */
+
+.popupDetalles .opcionesContainer .btnOption {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    outline: none;
+    border: 0;
+    cursor: pointer;
+    padding: 20px 28px;
+    background-color: #e0e0e03e;
+    transition: 0.3s;
+    border-top: 1px solid #cacaca;
+    box-shadow: none !important;
+}
+
+.popupDetalles .opcionesContainer:last-child {
+    border-bottom: 1px solid #cacaca;
+}
+
+.popupDetalles .opcionesContainer .btnOption:hover {
+    background-color: #e0e0e08e;
+}
+
+.popupDetalles .opcionesContainer .btnOption p {
+    font-size: clamp(18px, 2vw, 18px);
+    margin: 0;
+    font-weight: 400;
+    color: #3b3b3b;
+    text-align: left;
+}
+
+.popupDetalles .opcionesContainer .btnOption svg {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    margin-left: 8px;
+    stroke-width: 1.2;
+    stroke: #3b3b3b;
+    margin-bottom: 1px;
+    transition: 0.3s;
+}
+
+.popupDetalles .opcionesContainer .btnOption .btnOptionParte {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popupDetalles .opcionesContainer .btnOption h3 {
+    font-weight: 300;
+    font-size: clamp(15px, 2vw, 18px);
+    color: #3b3b3b;
+    width: fit-content;
+    background-color: #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 0;
+    color: #fdfdfd;
+    background-color: #242b57f2;
+}
+
+.popupDetalles .opcionesContainer .tablaContainer {
+    width: calc(100% - 40px);
+    padding: 20px;
+}
+
+.tablaContainer {
+    display: none;
+}
+
+.popupDetalles .mainSubtitle {
+    margin-bottom: 0 !important;
+}
+
+@media (max-width: 615px) {
+    .popupDetalles {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .popupDetalles .opcionesContainer .btnOption {
+        flex-direction: column;        
+        align-items: end;
+    }
+
+    .popupDetalles .opcionesContainer .btnOption .btnOptionParte {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .popupDetalles .opcionesContainer .btnOption h3 {
+        margin-top: 25px;
+    }
+}
+
+@media (max-width: 408px) {
+    .popupDetalles .opcionesContainer .btnOption svg {
+        display: none;
+    }
+}

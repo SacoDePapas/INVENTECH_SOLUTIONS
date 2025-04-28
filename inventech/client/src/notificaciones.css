@@ -1,0 +1,128 @@
+main .mainSubtitle {
+    width: calc(100% - 80px);
+    padding: 0 40px;
+    text-align: center;
+    font-weight: 400;
+}
+
+main .mainTitulo{
+    width: calc(100% - 80px);
+    padding: 40px 40px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.cardContainer .cardContent svg:not(.btnVerDetalles svg) {
+    stroke-width: 1;
+    box-shadow: inset 0 0 8px 0 #e0e0e0c4;
+    width: 6rem;
+}
+
+.cardContainer .cardContent h1 {
+    font-weight: 450;
+    color: #5b5b5b;
+}
+
+.btnVerDetalles {
+    width: fit-content;
+    background-color: transparent;
+    border: 0;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    background-color: #242b570a;
+    border: 1px solid #e0e0e05c;
+    padding: 6px 12px;
+    border-radius: 10px;
+    margin-top: 20px;
+    transition: 0.3s;
+}
+
+.btnVerDetalles svg {
+    stroke-width: 0.9;
+    width: clamp(22px, 2vw, 22px) !important;
+    height: clamp(22px, 2vw, 22px) !important;
+    padding: 0 !important;
+    margin-left: 6px;
+    margin-bottom: 3px;
+    background-color: transparent !important;
+    transition: 0.3s;
+}
+
+.btnVerDetalles h1 {
+    margin: 0;
+    margin-top: 1px;
+    font-size: clamp(17px, 2vw, 17px);
+    font-weight: 100 !important;
+    color: #5f5f5f !important;
+    transition: 0.3s;
+}
+
+.cardContainer {
+    display: flex;
+    flex-direction: row;
+    padding: 0 20px;
+    width: calc(100% - 40px);
+    margin-top: 4rem;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+.cardContainer .cardContent {
+    box-shadow: 10px 20px 40px #bebebe, -10px -20px 40px #ffffff;
+    min-width: 350px;
+    max-width: 350px;
+    border-radius: 20px;
+    padding: 30px 20px;
+}
+
+.cardContainer .cardContent:hover .btnVerDetalles {
+    background-color: #242b57e0 !important;
+}
+
+.cardContent:hover .btnVerDetalles h1 {
+    color: #fdfdfd !important;
+}
+
+.cardContent:hover .btnVerDetalles svg {
+    stroke: #fdfdfd;
+}
+
+.cardContainer .cardContent {
+    margin: 0 25px;
+    margin-bottom: 60px;
+}
+
+@media (max-width: 465px) {
+    .cardContainer {
+        padding: 0;
+        width: 100%;
+    }
+
+    .cardContainer .cardContent {
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        box-shadow: none;
+        border: 2px solid #ffffff;
+        border-bottom: 1px solid #5b5b5b3c;
+        min-width: 200px;
+        height: auto;
+        padding: 40px 20px;
+    }
+
+    .cardContainer .cardContent:nth-child(1) {
+        border-top: 1px solid #5b5b5b3c;
+    }
+
+    .cardContainer .cardContent svg:not(.btnVerDetalles svg) {
+        display: none;
+    }
+
+    .cardContainer .cardContent h1 {
+        margin-top: 0;
+    }
+}
