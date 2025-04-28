@@ -438,6 +438,21 @@ def update_objeto():
 #Rentas
 @app.route("/create_rentas",methods=["POST"])
 def create_rentas():
+    data=request.get_json()
+    if not data:
+        app.logger.info(f"No data")
+        return jsonify({"error": "No data provided"}), 400
+    
+    with connection.cursor() as cursor:
+        name = data.get('name')
+        id__organizacion = int(data.get('org-code'))
+        try:
+            cursor.execute(INSERT_AREAS,(name,id__organizacion))
+            connection.commit()
+            return jsonify({'success': True,'message': 'User registered successfully'}), 200
+        except Exception as e:
+            return jsonify({'error': True,'message': f'Ocurrio un error {e}'}), 400
+
     return {"Nose":"nose"}
 
 @app.route("/delete_renta",methods=["POST"])
