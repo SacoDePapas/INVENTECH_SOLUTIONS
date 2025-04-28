@@ -1,7 +1,10 @@
 import React, { useState, useRef } from "react";
 import "./login.css";
+import { useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
+    const navigate = useNavigate();
     const [showLogin, setShowLogin] = useState(true);
     const [showRegister, setRegister] = useState(false);
 
@@ -208,7 +211,6 @@ const Login = () => {
                                 ¿No tienes cuenta? <strong>Regístrate</strong>
                             </h5>
                             <br /><br /><br /><hr /><br />
-                            <h5 id="btnCorreoContacto"></h5>
                             <h5 id="btnCorreoContacto">
                                 <a href="mailto:mail@outlook.com" style={{ textDecoration: "none", color: "inherit" }}>
                                     ¿Quieres registrar tu organización?  <strong>  Contactanos</strong>
