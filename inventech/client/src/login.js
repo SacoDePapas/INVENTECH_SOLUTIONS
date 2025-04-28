@@ -1,13 +1,16 @@
 import React, { useState, useRef } from "react";
 import "./login.css";
+import { useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
+    const navigate = useNavigate();
     const [showLogin, setShowLogin] = useState(true);
     const [showRegister, setRegister] = useState(false);
 
 
     const handleLoginClick = () => {
-        window.location.reload();
+        navigate("/principal");
     };
 
     const handleSeePassCClick = () => {

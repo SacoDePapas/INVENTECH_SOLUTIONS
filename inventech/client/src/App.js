@@ -1,148 +1,17 @@
-import React, { useState } from "react";
-// import "./App.css";
-// import Login from "./login";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './login';
+import Principal from './principal';
 
-// const Register = () => {
-//   const [formData, setFormData] = useState({
-//     Id:"",
-//     name: "",
-//     password: "",
-//     Id_facultad: "",
-//     organizationCode: "",
-//     Status:""
-//   });
-//   const [error, setError] = useState("");
-//   const [success, setSuccess] = useState(false);
-//   const [organizations, setOrganizations] = useState([]);
-//   const [dropdownVisible, setDropdownVisible] = useState(false);
-  
-//   const handleSearch = async () => {
-//     setDropdownVisible(false);
-//     setOrganizations([]);
-//     try {
-//       const response = await fetch(`http://localhost:5000/search_org?code=${formData.organizationCode}`);
-//       const data = await response.json();
-      
-//       if (Array.isArray(data)) {
-//         setOrganizations(data);
-//       } else {
-//         setOrganizations([]); // Ensure it's an array
-//       }
-  
-//       setDropdownVisible(true);
-//     } catch (error) {
-//       console.error("Error fetching organization data:", error);
-//       setOrganizations([]); // Prevents `map` errors
-//     }
-//   };
-  
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/principal" element={<Principal />} />
+      </Routes>
+    </Router>
+  );
+}
 
-
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       const response = await fetch('http://localhost:5000/create_user', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(formData),
-//       });
-
-//       if (response.ok) {
-//         const result = await response.json();
-
-//         // Store the token or session identifier (e.g., in local storage)
-//         localStorage.setItem('token', result.token); // Assuming the API returns a token
-//         localStorage.setItem('user', JSON.stringify(result.user)); // Store user data if needed
-
-//       } else {
-//         console.error('Failed to create user:', response.statusText);
-//         alert('Failed to create user. Please try again.');
-//       }
-//     } catch (error) {
-//       console.error('Error submitting form:', error);
-//       alert('An error occurred. Please try again.');
-//     }
-//   };
-
-//   return (
-//     <div className="container">
-//       <h2>Register</h2>
-//       {error && <p style={{ color: "red" }}>{error}</p>}
-//       {success && <p style={{ color: "green" }}>Registration successful!</p>}
-//       <form onSubmit={handleSubmit}>
-//         <div>
-//           <label>Id:</label>
-//           <input
-//             type="text"
-//             name="Id"
-//             value={formData.Id}
-//             onChange={handleChange}
-//           />
-//         </div>
-//         <div>
-//           <label>Nombre:</label>
-//           <input
-//             type="text"
-//             name="name"
-//             value={formData.name}
-//             onChange={handleChange}
-//           />
-//         </div>
-//         <div>
-//           <label>Contraseña:</label>
-//           <input
-//             type="password"
-//             name="password"
-//             value={formData.password}
-//             onChange={handleChange}
-//           />
-//         </div>
-//         <div className="organization-input">
-//           <label>Organization Code:</label>
-//           <input
-//             type="text"
-//             name="organizationCode"
-//             value={formData.organizationCode}
-//             onChange={handleChange}
-//           />
-//           <button type="button" onClick={handleSearch}>Search</button>
-//         </div>
-//         {dropdownVisible && organizations.length > 0 && (
-//           <div className="dropdown">
-//             <select
-//               name="Id_facultad"
-//               value={formData.Id_facultad}
-//               onChange={handleChange}
-//             >
-//               <option value="">Select an Organization</option>
-//               {organizations.map((org, index) => (
-//                 <option key={index} value={org.id}>{org.name}</option>
-//               ))}
-//             </select>
-//           </div>
-//         )}
-//         <button type="submit">Register</button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// Render the Login component
-
-
-// const App = () => {
-//   return (
-//     <div className="App">
-//       {/* <Register /> */}
-//       <Login />
-//     </div>
-//   );
-// };
-
-// export default App;
+export default App;
