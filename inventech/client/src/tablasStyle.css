@@ -1,0 +1,46 @@
+table tbody tr:nth-child(odd) {
+    background-color: #fdfdfd !important;
+    box-shadow: none !important;
+    transition: 0.3s !important;
+}
+
+table tbody tr:nth-child(odd):hover {
+    background-color: #f4f4f4 !important; /* Más claro que #eaeaea */
+    box-shadow: none !important;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f7f7f7 !important;
+    box-shadow: none !important;
+    transition: 0.3s !important;
+}
+
+table tbody tr:nth-child(even):hover {
+    background-color: #efefef !important; /* Más claro que #dcdcdc */
+    box-shadow: none !important;
+}
+
+table.dataTable.display>tbody>tr.odd>.sorting_1, table.dataTable.order-column.stripe>tbody>tr.odd>.sorting_1,
+table.dataTable.stripe>tbody>tr.odd>*, table.dataTable.display>tbody>tr.odd>*,
+table.dataTable.display>tbody>tr.even>.sorting_1, table.dataTable.order-column.stripe>tbody>tr.even>.sorting_1,
+table.dataTable.hover>tbody>tr:hover>*, table.dataTable.display>tbody>tr:hover>*,
+table.dataTable.display tbody tr:hover>.sorting_1, table.dataTable.order-column.hover tbody tr:hover>.sorting_1 {
+    box-shadow: none !important;
+}
+
+table tbody td {
+    padding-top: 18px !important;  /* Espaciado superior */
+    padding-bottom: 18px !important;  /* Espaciado inferior */
+}
+
+/* Estilos para encabezados */
+.display thead th {
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+    background-color: #f4f4f4; /* Fondo para el encabezado */
+    position: sticky; /* Mantener el encabezado fijo al hacer scroll */
+    top: 0; /* Asegurar que se mantenga en la parte superior */
+}
+
+.tablaContainer {
+    overflow-x: auto;
+}

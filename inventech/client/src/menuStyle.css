@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+body {   
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
+}
+
+.mainMenu {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    background-color: #646c7a;
+    padding: 18px 0;
+}
+
+.mainMenu .menuContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 15px 40px;
+    border-right: 1px solid #fdfdfd;
+    max-width: 1100px;
+}
+
+.parteNombreUsuario {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+}
+
+.mainMenu .menuContainer a {
+    color: #fdfdfd;
+    text-decoration: none;
+    text-align: center;
+    font-size: clamp(16px, 2vw, 16px);
+    line-height: 20px;
+    font-weight: 550;
+    padding: 4px 16px;
+    transition: 0.3s;
+    border-radius: 8px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainMenu .menuContainer a:hover {
+    background-color: #fdfdfd;
+    color: #242B57;
+}
+
+.mainMenu .nombreUsuario {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    flex-direction: column;
+    width: 30%;
+    padding: 0 40px;
+}
+
+.mainMenu .nombreUsuario svg {
+    width: clamp(24px, 2vw, 24px);
+    height: clamp(24px, 2vw, 24px);
+    border-radius: 100px;
+    margin-top: 0.5px;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    stroke: #fdfdfd;
+}
+
+.mainMenu .nombreUsuario .parteNombreUsuario p {
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: 500;
+    margin: 0;
+    height: fit-content;
+    color: #fdfdfd;
+    text-align: right;
+}
+
+#btnSalir {
+    margin: 0;
+    margin-top: 6px;
+    cursor: pointer;
+    color: #fdfdfd;
+}
+
+.mainMenu.responsive {
+    background-color: #fdfdfd;
+}
+
+.mainMenu.responsive .menuContainer {
+    position: fixed;
+    width: 400px;
+    height: calc(100% - 30px);
+    background-color: #242B57;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    transform: translateX(-100%);
+    transition: 0.3s;
+    top: 0;
+}
+
+.mainMenu.responsive .menuContainer a { 
+    padding: 0;
+    position: relative;
+    padding-bottom: 2px;
+    margin: 20px 0;
+}
+
+.mainMenu.responsive .menuContainer a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 1px;
+    background-color: #fdfdfd;
+    left: 0;
+    bottom: 0;
+    border-radius: 2px;
+    transition: 0.3s;
+}
+
+.mainMenu.responsive .menuContainer a:hover::after {
+    width: 100%;
+}
+
+.mainMenu.responsive .menuContainer a:hover {
+    background-color: transparent;
+    color: #fdfdfd;
+}
+
+.hamburger {
+    z-index: 2;
+    margin-top: 40px;
+    margin-left: 30px;
+}
+
+.mainMenu.responsive .nombreUsuario {
+    margin-top: 45px;
+}
+
+.mainMenu.responsive .nombreUsuario svg {    
+    stroke: #242B57;
+    stroke-width: 1.25px;
+}
+
+.mainMenu.responsive .nombreUsuario .parteNombreUsuario p {
+    color: #242B57;
+}
+
+.mainMenu.responsive #btnSalir {
+    color: #242B57;
+}
+
+@media (max-width: 1732px) {
+    .mainMenu.default .nombreUsuario svg {
+        display: none;
+    }
+}
+
+@media (max-width: 1485px) {
+    .mainMenu.default {
+        display: none;
+    }
+
+    .mainMenu.responsive {
+        display: flex !important;
+    }
+
+    .mainMenu.responsive .nombreUsuario {
+        width: 80%;
+    }
+}
+
+@media (max-width: 485px) {
+    .mainMenu.responsive .nombreUsuario svg {
+        display: none;
+    }
+}
