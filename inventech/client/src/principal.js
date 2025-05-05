@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import $ from 'jquery';
-import './jquery.dataTables.min.css';
-import 'datatables.net-dt';
+import React, { useState } from "react";
+import DataTable from "react-data-table-component";
+// import $ from 'jquery';
 import './notificaciones.css';
 import './btnMenuStyle.css';
 import './menuStyle.css';
@@ -60,18 +59,45 @@ const Inicio = () => {
         );
     }
     const [popupVisible, setPopupVisible] = useState(false);
+    const [searchText, setSearchText] = useState('');
 
-    const tableRef = useRef(null);
 
     const abrirPopup = () => setPopupVisible(true);
     const cerrarPopup = () => setPopupVisible(false);
 
-    useEffect(() => {
-        if ($.fn.dataTable.isDataTable(tableRef.current)) {
-            $(tableRef.current).DataTable().destroy();
-        }
-        $(tableRef.current).DataTable(); // Inicializamos el DataTable
-    });
+    const data = [
+        { id: "1263", nombre: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
+        { id: "1264", nombre: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
+        { id: "1265", nombre: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
+        { id: "1266", nombre: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
+        { id: "1267", nombre: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
+        { id: "1268", nombre: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
+        { id: "1269", nombre: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
+        { id: "1270", nombre: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
+        { id: "1271", nombre: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
+        { id: "1272", nombre: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
+        { id: "1273", nombre: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
+        { id: "1274", nombre: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
+        { id: "1275", nombre: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
+        { id: "1276", nombre: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
+        { id: "1277", nombre: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
+        { id: "1278", nombre: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
+    ];
+
+    const columns = [
+        { name: 'ID', selector: row => row.id, sortable: true },
+        { name: 'Articulo', selector: row => row.nombre, sortable: true },
+        { name: 'Descripción', selector: row => row.descripcion, sortable: true },
+        { name: 'Cantidad Disponible', selector: row => row.cantidad, sortable: true },
+    ];
+
+    const filteredData = data.filter((item) =>
+        Object.values(item)
+          .join(' ')
+          .toLowerCase()
+          .includes(searchText.toLowerCase())
+    );
+
 
     return (
         <main>
@@ -86,35 +112,28 @@ const Inicio = () => {
                         </svg>
                     </button>
                     <h1 className="mainTitulo">Redes</h1>
+
                     <section className="opcionesContainer">
+                    {/* <input type="text" placeholder="Buscar..." className="mb-4 p-2 border rounded w-full" value={searchText} onChange={(e) => setSearchText(e.target.value)}/> */}
+                        <div className="group">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" className="icon">
+                                <g>
+                                    <path
+                                        d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"
+                                    ></path>
+                                </g>
+                            </svg>
+                            <input className="input" type="search" placeholder="Search" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+                        </div>
                         <div className="optionContainer">
                             <div className="tablaContainer">
-                                <table id="miTabla3" className="display" ref={tableRef}>
-                                    <thead>
-                                        <tr>
-                                            <th>Nombre</th>
-                                            <th>Edad</th>
-                                            <th>Ciudad</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Juan</td>
-                                            <td>25</td>
-                                            <td>Ciudad de México</td>
-                                        </tr>
-                                        <tr>
-                                            <td>María</td>
-                                            <td>30</td>
-                                            <td>Guadalajara</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Carlos</td>
-                                            <td>22</td>
-                                            <td>Monterrey</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <DataTable
+                                    columns={columns}
+                                    data={filteredData}
+                                    pagination
+                                    highlightOnHover
+                                    responsive
+                                />
                             </div>
                         </div>
                     </section>
