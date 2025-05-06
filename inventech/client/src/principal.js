@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
-// import $ from 'jquery';
 import './notificaciones.css';
 import './btnMenuStyle.css';
 import './menuStyle.css';
 import './popupStyle.css';
-// import './popupNotiStyle.css';
-// import './tablasStyle.css';
+
 
 const Inicio = () => {
     const menuHeader = () => {
@@ -114,7 +112,6 @@ const Inicio = () => {
                     <h1 className="mainTitulo">Redes</h1>
 
                     <section className="opcionesContainer">
-                    {/* <input type="text" placeholder="Buscar..." className="mb-4 p-2 border rounded w-full" value={searchText} onChange={(e) => setSearchText(e.target.value)}/> */}
                         <div className="group">
                             <svg viewBox="0 0 24 24" aria-hidden="true" className="icon">
                                 <g>
