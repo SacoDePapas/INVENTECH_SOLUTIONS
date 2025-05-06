@@ -19,7 +19,7 @@ INSERT_AREAS =("INSERT INTO Areas(nombre,id_organizacion) VALUES (%s,%s);")
 #-----------------------------------------------------------------------------------------------#
 
 #Usuario/Objeto/Rentas
-INSERT_USER =("INSERT INTO Usuarios (Id, password,nombre,Id_facultad,Rol,Status) VALUES (%s,%s,%s,%s,%s,%s);")
+INSERT_USER =("INSERT INTO Usuarios (Id, password,nombre,id_area,Id_facultad,Rol,Status) VALUES (%s,%s,%s,%s,%s,%s,%s);")
 INSERT_OBJETO =("INSERT INTO Objetos (nombre,Descripcion,Cant,Cant_disp,Id_Area,Status) VALUES (%s,%s,%s,%s,%s,%s);")
 INSERT_RENTAS =("INSERT INTO Rentas (Id_usuario,Id_encargado,Salon,Id_Area,Status) VALUES (%s,%s,%s,%s,%s);")
 
@@ -88,6 +88,33 @@ def members():
 
     return
 
+@app.route("/login",methods =["POST"])
+def login(): 
+    data=request.get_json()
+    if not data:
+        app.logger.info(f"No data")
+        return jsonify({"error": "No data provided"}), 400
+    
+    with connection.cursor() as cursor:
+        user = int(data.get('user'))
+        passw = data.get('pass')
+        try:
+            cursor.execute(SELECT_USUARIOS_UNO,(user,))
+            Exist=cursor.fetchone()
+            try:
+                if Exist and Exist[0] == user and Exist[1]==passw:
+                    return jsonify({'success': True,'message': 'Usuario encontrado'}), 200
+                return jsonify({'error': True,'message': 'Usuario O contraseña incorrectos'}), 400
+            except Exception as e:
+                print(e)
+                return jsonify({"error": str(e)})
+        except Exception as e :
+            print(e)
+            return jsonify({"error": str(e)})
+    return jsonify({'error': True,'message': 'Error no testeado'}), 140
+
+
+
 @app.route('/users')
 def show_users():
     with connection.cursor() as cursor:
@@ -108,7 +135,9 @@ def search_org():
             if facultades:
                 return jsonify([{"name": org[0],"id":org[1]} for org in facultades])  # Send JSON list
             else:
-                return jsonify([])  # Send empty list if no matches
+                cursor.execute("SELECT nombre,id FROM Areas WHERE id_organizacion = %s", (organization_code,))
+                areas = cursor.fetchall()
+                return jsonify([{"name": org[0],"id":org[1]} for org in areas]) # Send empty list if no matches
         except Exception as e:
             return jsonify({"error": str(e)})
 
@@ -257,22 +286,40 @@ def create_user():
         return jsonify({"error": "No data provided"}), 400
 
     with connection.cursor() as cursor:
-        id_txt = data.get('Id')
+        print(data)
+        id_txt = data.get('id')
         id = int(id_txt)
         nombre = data.get('name')
         password = data.get('password')
+        id_Area_txt = data.get('Id_Area')   
         id_facultad_txt = data.get('Id_facultad')
-        id_facultad=int(id_facultad_txt)
         Status= "Activo"
         Rol = "User"
         try:
             cursor.execute(SELECT_USUARIOS_UNO,(id,))
             Exist=cursor.fetchone()
             if not Exist:
-                cursor.execute(INSERT_USER,(id,password,nombre,id_facultad,Rol,Status))
-                connection.commit()
-                return {"Success":"Se creo el Usuario"}     
-            return {"Error":"Existe el usuario"}
+                if len(id_Area_txt)>0:
+                    try:
+                        id_Area=int(id_Area_txt)
+                        cursor.execute(INSERT_USER,(id,password,nombre,id_Area,None,Rol,Status))
+                        connection.commit()
+                        return jsonify({'success': True,'message': 'User registered successfully'}), 200
+                    except Exception as e:
+                        print(f"Database error in Area case: {str(e)}") 
+                else:
+                    try:
+
+                        id_facultad = int(id_facultad_txt)
+                        cursor.execute(INSERT_USER,(id,password,nombre,None,id_facultad,Rol,Status))
+                        connection.commit()
+                        return jsonify({'success': True,'message': 'User registered successfully'}), 200
+                    except Exception as e :
+                        print(f"Database error in Area case: {str(e)}") 
+
+
+                
+            return jsonify({'error': True,'message': 'Usuario ya registrados'}), 140
         except Exception as e :
             return jsonify({"error": str(e)})
     return {"Nose":"nose"}
@@ -417,8 +464,8 @@ def create_rentas():
             return jsonify({"error": str(e)})
     return {"Nose":"nose"}
 
-@app.route("/delete_objeto",methods=["POST"])
-def delete_objeto():
+@app.route("/delete_renta",methods=["POST"])
+def delete_renta():
     data=request.get_json()
     if not data:
         app.logger.info(f"No data")
@@ -436,7 +483,7 @@ def delete_objeto():
 
 
 @app.route("/update_objeto",methods=["POST"])
-def update_objeto():
+def update_renta():
     data=request.get_json()
     if not data:
         app.logger.info(f"No data")
