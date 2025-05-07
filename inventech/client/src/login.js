@@ -43,6 +43,7 @@ const Login = () => {
                 title: 'Bienvenido',
                 text: data.message,
             });
+            navigate("/principal")
         }catch (error) {
             const { default: Swal } = await import('sweetalert2');
             await Swal.fire({

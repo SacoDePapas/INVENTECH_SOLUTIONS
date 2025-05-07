@@ -103,7 +103,6 @@ def login():
             Exist=cursor.fetchone()
             try:
                 if Exist and Exist[0] == user and Exist[1]==passw:
-                    print("si se cumple apaa")
                     return jsonify({'success': True,'message': 'Usuario encontrado'}), 200
                 return jsonify({'error': True,'message': 'Usuario O contraseña incorrectos'}), 400
             except Exception as e:
@@ -113,6 +112,8 @@ def login():
             print(e)
             return jsonify({"error": str(e)})
     return jsonify({'error': True,'message': 'Error no testeado'}), 140
+
+
 
 @app.route('/users')
 def show_users():
@@ -457,12 +458,20 @@ def create_rentas():
 
 @app.route("/delete_renta",methods=["POST"])
 def delete_renta():
+    data=request.get_json()
+    if not data:
+        app.logger.info(f"No data")
+        return jsonify({"error": "No data provided"}), 400
 
     return {"Nose":"nose"}
 
 
-@app.route("/update_renta",methods=["POST"])
+@app.route("/update_objeto",methods=["POST"])
 def update_renta():
+    data=request.get_json()
+    if not data:
+        app.logger.info(f"No data")
+        return jsonify({"error": "No data provided"}), 400
 
     return {"Nose":"nose"}
 
