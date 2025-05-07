@@ -1,58 +1,60 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
-// import $ from 'jquery';
 import './notificaciones.css';
 import './btnMenuStyle.css';
 import './menuStyle.css';
 import './popupStyle.css';
-// import './popupNotiStyle.css';
-// import './tablasStyle.css';
+
 
 const Inicio = () => {
     const menuHeader = () => {
         return (
             <>
                 <header className="mainMenu default">
-                    <label className="hamburger responsive" style={{marginTop: "0px"}}>
+                    <a href="./principal" className="hamburger responsive" style={{ marginTop: "0px" }}>
                         <input type="checkbox" />
                         <svg viewBox="0 0 32 32">
                             <path className="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22" />
                             <path className="line" d="M7 16 27 16" />
                         </svg>
-                    </label>
-
+                    </a>
+    
                     <section className="menuContainer">
-                        <h1 className="eNombre" href="#" style={{fontWeight: "450", color: "white"}}>InvenTech Solutions</h1>
+                        <h1 className="eNombre" href="#" style={{ fontWeight: "450", color: "white" }}>InvenTech Solutions</h1>
                     </section>
     
                     <section className="nombreUsuario">
                         <div className="parteNombreUsuario">
                             <p className="usuarioName">Francisco Olvera Pérez</p>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
+                            <a href="./perfil">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                            </a>
                         </div>
-                        <a id="btnSalir" href="./" style={{textDecoration: "none"}}>Cerrar sesión</a>
+                        <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
                     </section>
                 </header>
     
                 <header className="mainMenu responsive" style={{ display: 'none' }}>
-                    <label className="hamburger">
+                    <a href="./principal" className="hamburger">
                         <input type="checkbox" />
                         <svg viewBox="0 0 32 32">
                             <path className="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22" />
                             <path className="line" d="M7 16 27 16" />
                         </svg>
-                    </label>
+                    </a>
     
                     <section className="nombreUsuario">
                         <div className="parteNombreUsuario">
                             <p className="usuarioName">Francisco Olvera Pérez</p>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
-                            </svg>
+                            <a href="./perfil">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                            </a>
                         </div>
-                        <a id="btnSalir" href="./" style={{textDecoration: "none"}}>Cerrar sesión</a>
+                        <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
                     </section>
                 </header>
             </>
@@ -114,7 +116,6 @@ const Inicio = () => {
                     <h1 className="mainTitulo">Redes</h1>
 
                     <section className="opcionesContainer">
-                    {/* <input type="text" placeholder="Buscar..." className="mb-4 p-2 border rounded w-full" value={searchText} onChange={(e) => setSearchText(e.target.value)}/> */}
                         <div className="group">
                             <svg viewBox="0 0 24 24" aria-hidden="true" className="icon">
                                 <g>
