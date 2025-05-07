@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+body {
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
+}
+
+.profile-card {
+    position: relative;
+    width: 100%;
+    height: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 12px 12px 12px -20px rgba(0, 0, 0, 0.3);
+    transform: perspective(1000px) scale(0.8);
+}
+  
+.profile-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #f0f2f5;
+    margin: 0 auto 1rem;
+    overflow: hidden;
+    border: 3px solid white;
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-image::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 96px;
+    background-color: #b6b6b6;
+    border-radius: 20px 20px 0 0;
+    z-index: -1;
+}
+  
+.profile-info {
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+  
+.profile-name {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin-bottom: 0.25rem;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+  
+.profile-title {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+  
+.profile-bio {
+    font-size: 0.85rem;
+    color: #777;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+}
+  
+.social-links {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+  
+.social-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #f0f2f5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+  
+.social-btn:hover {
+    background: #e4e6e9;
+    transform: translateY(-6px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+  
+.social-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: #1a1a1a;
+    transition: all 0.2s ease;
+}
+  
+.social-btn:hover svg {
+    fill: #0066ff;
+}
+  
+.social-btn.twitter:hover svg {
+    fill: #1da1f2;
+}
+.social-btn.instagram:hover svg {
+    fill: #e4405f;
+}
+.social-btn.linkedin:hover svg {
+    fill: #0a66c2;
+}
+.social-btn.github:hover svg {
+    fill: #333333;
+}
+  
+.cta-button {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 10px;
+    background: #b6b6b6;
+    color: white;
+    font-weight: 600;
+    /* cursor: ; */
+    transition:  transform 0.2s, background 0.2s;
+}
+  
+.cta-button:hover {
+    background: #555c67;
+    transform: translateY(-2px);
+}
+  
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+  
+.stat-item {
+    text-align: center;
+}
+  
+.stat-value {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+  
+.stat-label {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.save-button {
+    font-family: inherit;
+    font-size: 20px;
+    background: #212121;
+    color: white;
+    fill: rgb(155, 153, 153);
+    padding: 0.7em 1em;
+    padding-left: 0.9em;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    border-radius: 15px;
+    font-weight: 1000;
+  }
+  
+  .save-button span {
+    display: block;
+    margin-left: 0.3em;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .save-button svg {
+    display: block;
+    transform-origin: center center;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .save-button:hover {
+    background: #000;
+  }
+  
+  .save-button:hover .svg-wrapper {
+    transform: scale(1.25);
+    transition: 0.5s linear;
+  }
+  
+  .save-button:hover svg {
+    transform: translateX(1.2em) scale(1.1);
+    fill: #fff;
+  }
+  
+  .save-button:hover span {
+    opacity: 0;
+    transition: 0.5s linear;
+  }
+  
+  .save-button:active {
+    transform: scale(0.95);
+  }
+  
