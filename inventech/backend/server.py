@@ -5,10 +5,9 @@ from flask import Flask,request,jsonify
 from flask_cors import CORS 
 import sys
 import logging
-
+from flask_jwt_extended import JWTManager,create_access_token,create_refresh_token,get_jwt_identity,jwt_required
 
 #Esta es una prueba
-
 
 
 #CREATE
@@ -26,6 +25,8 @@ INSERT_RENTAS =("INSERT INTO Rentas (Id_usuario,Id_encargado,Salon,Id_Area,Statu
 
 #READ
 
+
+
 #Facultad/Areas
 SELECT_FACULTAD=("""SELECT * FROM Facultad """)
 SELECT_FACULTAD_UNO=("""SELECT * FROM Facultad WHERE id = (%s)""")
@@ -41,6 +42,11 @@ SELECT_OBJETOS=("""SELECT * FROM Objetos """)
 SELECT_OBJETOS_UNO=("""SELECT * FROM Objetos  WHERE nombre = (%s)""")
 SELECT_RENTAS=("""SELECT * FROM Rentas """)
 SELECT_RENTAS_UNO=("""SELECT * FROM Rentas  WHERE Id = (%s)""")
+#MISC
+SELECT_ID_ORG = ("""SELECT id_organizacion FROM facultad WHERE id = (%s)""")
+SELECT_AREAS_ALUM = ("""SELECT * FROM areas WHERE id_organizacion = (%s)""")
+SELECT_AREAS_EMPRESA = ("""SELECT * FROM areas WHERE id = (%s)""")
+
 
 #UPDATE
 
@@ -76,12 +82,63 @@ load_dotenv()
 
 app =  Flask(__name__)
 CORS(app)
+app.config["JWT_SECRET_KEY"] =os.getenv("JWT_SECRET") # Change this!
+jwt = JWTManager(app)
 url=os.getenv("DATABASE_URL")
 connection=psycopg2.connect(url)
 
 @app.route("/")
 def home():
     return str('Hello,World')
+
+
+
+@app.route("/principal", methods=["GET"])
+@jwt_required()
+def data_page():
+    current_user = get_jwt_identity()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(SELECT_USUARIOS_UNO,(current_user,))
+            user = cursor.fetchone()
+           
+            if not user:
+
+                return  jsonify({"error": "No existe el usuario"}), 404
+            
+            response_data = {
+                "message": "Access granted",
+                "user_id": current_user,
+                "Name": user[2],  # Assuming name is at index 2
+                "areas": []
+            }
+            if user[3] is None and user[4] is not None:
+                cursor.execute(SELECT_ID_ORG, (user[4],))
+                org_code = cursor.fetchone()
+                if org_code:
+                    #print(org_code)
+                    cursor.execute(SELECT_AREAS_ALUM, (org_code,))
+                    areas = cursor.fetchall()
+                    response_data["areas"] = [{"id": area[0], "name": area[1]} for area in areas]
+            elif user[3] is not None:
+                cursor.execute(SELECT_AREAS_EMPRESA, (user[3],))
+                areas = cursor.fetchall()
+    
+            return jsonify(response_data),200
+                
+    except Exception as e:
+        #print(e)
+        return jsonify({"error": str(e)})
+
+
+
+
+    
+    # return jsonify({
+    #     "message": "Access granted",
+    #     "Name": current_user
+    # }), 200
 
 @app.route("/areas")
 def members():
@@ -103,7 +160,10 @@ def login():
             Exist=cursor.fetchone()
             try:
                 if Exist and Exist[0] == user and Exist[1]==passw:
-                    return jsonify({'success': True,'message': 'Usuario encontrado'}), 200
+
+                    access_token = create_access_token(identity=Exist[0])
+                    return jsonify({'success': True,'message': 'Usuario encontrado','access_token':access_token}), 200
+
                 return jsonify({'error': True,'message': 'Usuario O contraseña incorrectos'}), 400
             except Exception as e:
                 print(e)

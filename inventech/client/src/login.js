@@ -43,6 +43,7 @@ const Login = () => {
                 title: 'Bienvenido',
                 text: data.message,
             });
+            sessionStorage.setItem('token',data.access_token)
             navigate("/principal")
         }catch (error) {
             const { default: Swal } = await import('sweetalert2');

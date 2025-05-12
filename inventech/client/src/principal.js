@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
+import { useNavigate } from 'react-router-dom';
 // import $ from 'jquery';
 import './notificaciones.css';
 import './btnMenuStyle.css';
@@ -8,7 +9,50 @@ import './popupStyle.css';
 // import './popupNotiStyle.css';
 // import './tablasStyle.css';
 
+
 const Inicio = () => {
+    const navigate = useNavigate();
+    const [userData, setUserData] = useState(null);
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+              throw new Error('No token found');
+            }
+    
+            const response = await fetch('http://localhost:5000/principal', {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              }
+            });
+    
+            if (!response.ok) {
+              throw new Error('Unauthorized');
+            }
+    
+            const data = await response.json();
+            setUserData(data)
+    
+          } catch (error) {
+            console.error("Error:", error.message);
+            // Redirect to login if unauthorized or token is missing
+            if (error.message === 'Unauthorized' || error.message === 'No token found') {
+              sessionStorage.removeItem('token');
+              navigate('/');
+            }
+          }
+        };
+    
+        fetchData();
+    }, [navigate]);
+
+    const logout = () => {
+        sessionStorage.removeItem("token");
+        navigate("/")
+    };
+
     const menuHeader = () => {
         return (
             <>
@@ -27,7 +71,7 @@ const Inicio = () => {
     
                     <section className="nombreUsuario">
                         <div className="parteNombreUsuario">
-                            <p className="usuarioName">Francisco Olvera Pérez</p>
+                            <p className="usuarioName">{userData ? userData.Name : 'Loading...'}</p>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
@@ -47,12 +91,12 @@ const Inicio = () => {
     
                     <section className="nombreUsuario">
                         <div className="parteNombreUsuario">
-                            <p className="usuarioName">Francisco Olvera Pérez</p>
+                            <p className="usuarioName">{userData ? userData.Name: 'Loading...'}</p>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
                             </svg>
                         </div>
-                        <a id="btnSalir" href="./" style={{textDecoration: "none"}}>Cerrar sesión</a>
+                        <a id="btnSalir"  onClick={logout} href="./" style={{textDecoration: "none"}}>Cerrar sesión</a>
                     </section>
                 </header>
             </>
@@ -141,9 +185,9 @@ const Inicio = () => {
             )}
 
             <section className="cardContainer">
-                {['Redes', 'Salones', 'Electronica', 'Mantenimiento'].map((periodo, index) => (
-                    <div key={index} className="cardContent" onClick={abrirPopup}>
-                        <h1 style={{alignItems: "center"}}>{periodo}</h1>
+                {userData?.areas.map((area) => (
+                    <div key={area.id} className="cardContent" onClick={abrirPopup}>
+                        <h1 style={{alignItems: "center"}}>{area.name}</h1>
                         <button class="btnVerDetalles">
                             <h1>Detalles</h1>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
