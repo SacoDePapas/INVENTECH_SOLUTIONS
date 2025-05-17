@@ -36,7 +36,6 @@ const Inicio = () => {
     
           } catch (error) {
             console.error("Error:", error.message);
-            // Redirect to login if unauthorized or token is missing
             if (error.message === 'Unauthorized' || error.message === 'No token found') {
               sessionStorage.removeItem('token');
               navigate('/');
@@ -116,7 +115,7 @@ const Inicio = () => {
         setSelectedArea(area);
         setIsLoading(true);
         try{
-            const response = await fetch(`/get-objetos?area=${area.id}`); // Adjust this endpoint to match your Flask API
+            const response = await fetch(`/get-objetos?area=${area.id}`);
             const data = await response.json();
             setAreaData(data);
             setPopupVisible(true);
