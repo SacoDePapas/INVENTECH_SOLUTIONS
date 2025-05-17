@@ -18,7 +18,7 @@ INSERT_AREAS =("INSERT INTO Areas(nombre,id_organizacion) VALUES (%s,%s);")
 #-----------------------------------------------------------------------------------------------#
 
 #Usuario/Objeto/Rentas
-INSERT_USER =("INSERT INTO Usuarios (Id, password,nombre,id_area,Id_facultad,Rol,Status) VALUES (%s,%s,%s,%s,%s,%s,%s);")
+INSERT_USER =("INSERT INTO Usuarios (Id, password,nombre,id_area,id_facultad,rol,status) VALUES (%s,%s,%s,%s,%s,%s,%s);")
 INSERT_OBJETO =("INSERT INTO Objetos (nombre,Descripcion,Cant,Cant_disp,Id_Area,Status) VALUES (%s,%s,%s,%s,%s,%s);")
 INSERT_RENTAS =("INSERT INTO Rentas (Id_usuario,Id_encargado,Salon,Id_Area,Status) VALUES (%s,%s,%s,%s,%s);")
 
@@ -334,9 +334,6 @@ def update_area():
 
 
 
-
-
-
 #CRUD USUARIOS/OBJETOS/RENTAS---------------
 #USUARIOS
 @app.route("/create_user",methods=["POST"])
@@ -523,22 +520,17 @@ def create_rentas():
     if not data:
         app.logger.info(f"No data")
         return jsonify({"error": "No data provided"}), 400
-
+    
     with connection.cursor() as cursor:
-        nombre = data.get('name')
-        id_objeto = int(data.get('id-objeto'))
-        id_usuario = int(data.get('id-user'))
-        id_encargado = int(data.get('id-encargado'))
-        salon = data.get('salon')
-        id_Area = int(data.get('id-area'))
-        Status= "Activo"
+        name = data.get('name')
+        id__organizacion = int(data.get('org-code'))
         try:
-            cursor.execute(INSERT_RENTAS,(id_usuario,id_encargado,salon,id_Area,Status))
+            cursor.execute(INSERT_AREAS,(name,id__organizacion))
             connection.commit()
-            return {"Success":"Se creo el Objeto"}     
+            return jsonify({'success': True,'message': 'User registered successfully'}), 200
+        except Exception as e:
+            return jsonify({'error': True,'message': f'Ocurrio un error {e}'}), 400
 
-        except Exception as e :
-            return jsonify({"error": str(e)})
     return {"Nose":"nose"}
 
 @app.route("/delete_renta",methods=["POST"])
@@ -548,14 +540,6 @@ def delete_renta():
         app.logger.info(f"No data")
         return jsonify({"error": "No data provided"}), 400
 
-    with connection.cursor() as cursor:
-        id_txt = data.get('Id')
-        id = int(id_txt)
-        try:
-            cursor.execute(DELETE_RENTAS,(id))
-            cursor.commit()
-        except Exception as e :
-            return jsonify({"error": str(e)})
     return {"Nose":"nose"}
 
 
@@ -566,16 +550,6 @@ def update_renta():
         app.logger.info(f"No data")
         return jsonify({"error": "No data provided"}), 400
 
-    with connection.cursor() as cursor:
-        id = int(data.get('id'))
-
-        Status= data.get('status')
-
-        try:
-            cursor.execute(UPDATE_RENTAS,(Status,id))
-            cursor.commit()
-        except Exception as e :
-            return jsonify({"error": str(e)})
     return {"Nose":"nose"}
 
 
