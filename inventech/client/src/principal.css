@@ -132,6 +132,14 @@ body {
     /* padding-left: 10%;
     padding-right: 10%; */
 }
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    font-size: 1.2rem;
+    color: #666;
+}
 
 @keyframes bg-pan-right {
     0% {

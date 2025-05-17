@@ -39,7 +39,8 @@ SELECT_AREAS_UNO=("""SELECT * FROM Areas WHERE id = (%s)""")
 SELECT_USUARIOS=("""SELECT * FROM Usuarios  """)
 SELECT_USUARIOS_UNO=("""SELECT * FROM Usuarios  WHERE Id = (%s)""")
 SELECT_OBJETOS=("""SELECT * FROM Objetos """)
-SELECT_OBJETOS_UNO=("""SELECT * FROM Objetos  WHERE nombre = (%s)""")
+SELECT_OBJETOS_UNO_EDITAR=("""SELECT * FROM Objetos  WHERE nombre = (%s)""")
+SELECT_OBJETOS_UNO=("""SELECT id,nombre,descripcion,cant_disp FROM Objetos  WHERE id_area = (%s)""")
 SELECT_RENTAS=("""SELECT * FROM Rentas """)
 SELECT_RENTAS_UNO=("""SELECT * FROM Rentas  WHERE Id = (%s)""")
 #MISC
@@ -128,7 +129,7 @@ def data_page():
             return jsonify(response_data),200
                 
     except Exception as e:
-        #print(e)
+        print(e)
         return jsonify({"error": str(e)})
 
 
@@ -495,6 +496,22 @@ def update_objeto():
             return jsonify({"error": str(e)})
     return {"Nose":"nose"}
 
+@app.route("/get-objetos")
+def show_objetos():
+    area_id = request.args.get('area')
+    if not area_id:
+        app.logger.info(f"No data")
+        return jsonify([]), 400
+
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute(SELECT_OBJETOS_UNO,(area_id,))
+            objetos = cursor.fetchall()
+            if objetos:
+                return jsonify([{"id": objeto[0],"nombre":objeto[1],"descripcion":objeto[2],"cant_disp":objeto[3]} for objeto in objetos])
+        except Exception as e :
+            return jsonify({"error": str(e)})
+    return {"Nose":"nose"}
 
 
 

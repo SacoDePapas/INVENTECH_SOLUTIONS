@@ -104,29 +104,53 @@ const Inicio = () => {
     }
     const [popupVisible, setPopupVisible] = useState(false);
     const [searchText, setSearchText] = useState('');
+    const [selectedArea, setSelectedArea] = useState(null);
+    const [areaData, setAreaData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
+    const abrirPopup = async (area) =>{
+        setSelectedArea(area);
+        setIsLoading(true);
+        try{
+            const response = await fetch(`/get-objetos?area=${area.id}`); // Adjust this endpoint to match your Flask API
+            const data = await response.json();
+            setAreaData(data);
+            setPopupVisible(true);
 
-    const abrirPopup = () => setPopupVisible(true);
-    const cerrarPopup = () => setPopupVisible(false);
+        }catch (error){
+            console.error("Error fetching area data:", error);
+        }finally{
+            setIsLoading(false);
+        }
 
-    const data = [
-        { id: "1263", nombre: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
-        { id: "1264", nombre: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
-        { id: "1265", nombre: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
-        { id: "1266", nombre: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
-        { id: "1267", nombre: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
-        { id: "1268", nombre: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
-        { id: "1269", nombre: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
-        { id: "1270", nombre: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
-        { id: "1271", nombre: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
-        { id: "1272", nombre: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
-        { id: "1273", nombre: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
-        { id: "1274", nombre: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
-        { id: "1275", nombre: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
-        { id: "1276", nombre: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
-        { id: "1277", nombre: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
-        { id: "1278", nombre: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
-    ];
+    }
+    const cerrarPopup = () => {
+        setPopupVisible(false);
+        setSelectedArea(null);
+        setAreaData([]);
+    }
+
+    //const abrirPopup = () => setPopupVisible(true);
+    //const cerrarPopup = () => setPopupVisible(false);
+
+    // const data = [
+    //     { id: "1263", nombre: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
+    //     { id: "1264", nombre: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
+    //     { id: "1265", nombre: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
+    //     { id: "1266", nombre: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
+    //     { id: "1267", nombre: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
+    //     { id: "1268", nombre: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
+    //     { id: "1269", nombre: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
+    //     { id: "1270", nombre: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
+    //     { id: "1271", nombre: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
+    //     { id: "1272", nombre: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
+    //     { id: "1273", nombre: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
+    //     { id: "1274", nombre: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
+    //     { id: "1275", nombre: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
+    //     { id: "1276", nombre: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
+    //     { id: "1277", nombre: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
+    //     { id: "1278", nombre: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
+    // ];
 
     const columns = [
         { name: 'ID', selector: row => row.id, sortable: true },
@@ -135,7 +159,7 @@ const Inicio = () => {
         { name: 'Cantidad Disponible', selector: row => row.cantidad, sortable: true },
     ];
 
-    const filteredData = data.filter((item) =>
+    const filteredData = areaData.filter((item) =>
         Object.values(item)
           .join(' ')
           .toLowerCase()
@@ -155,7 +179,7 @@ const Inicio = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
-                    <h1 className="mainTitulo">Redes</h1>
+                    <h1 className="mainTitulo">{selectedArea?.name}</h1>
 
                     <section className="opcionesContainer">
                     {/* <input type="text" placeholder="Buscar..." className="mb-4 p-2 border rounded w-full" value={searchText} onChange={(e) => setSearchText(e.target.value)}/> */}
@@ -170,15 +194,22 @@ const Inicio = () => {
                             <input className="input" type="search" placeholder="Search" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
                         </div>
                         <div className="optionContainer">
-                            <div className="tablaContainer">
-                                <DataTable
-                                    columns={columns}
-                                    data={filteredData}
-                                    pagination
-                                    highlightOnHover
-                                    responsive
-                                />
+                            {isLoading?(
+                                <div className="loadingContainer"> 
+                                    <p>Loading data...</p>
+                                </div>
+                            ):(
+                                <div className="tablaContainer">
+                                    <DataTable
+                                        columns={columns}
+                                        data={filteredData}
+                                        pagination
+                                        highlightOnHover
+                                        responsive
+                                    />
                             </div>
+                            )}
+
                         </div>
                     </section>
                 </div>
@@ -186,9 +217,9 @@ const Inicio = () => {
 
             <section className="cardContainer">
                 {userData?.areas.map((area) => (
-                    <div key={area.id} className="cardContent" onClick={abrirPopup}>
+                    <div key={area.id} className="cardContent" >
                         <h1 style={{alignItems: "center"}}>{area.name}</h1>
-                        <button class="btnVerDetalles">
+                        <button class="btnVerDetalles" onClick={() => abrirPopup(area)} >
                             <h1>Detalles</h1>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
