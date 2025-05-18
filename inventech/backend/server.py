@@ -30,10 +30,12 @@ INSERT_RENTAS =("INSERT INTO Rentas (Id_usuario,Id_encargado,Salon,Id_Area,Statu
 #Facultad/Areas
 SELECT_FACULTAD=("""SELECT * FROM Facultad """)
 SELECT_FACULTAD_UNO=("""SELECT * FROM Facultad WHERE id = (%s)""")
+SELECT_FACULTAD_UN_NOMBRE=("""SELECT nombre FROM Facultad WHERE id = (%s)""")
 SELECT_AREAS=("""SELECT * FROM Areas """)
 SELECT_AREAS_UNO=("""SELECT * FROM Areas WHERE id = (%s)""")
 SELECT_ORGANIZACION=("""SELECT * FROM organizaciones """)
-SELECT_AREAS_UNO=("""SELECT * FROM Areas WHERE id = (%s)""")
+SELECT_ORGANIZACION_NOMBRE=("""SELECT nombre FROM organizaciones WHERE id = (%s) """)
+SELECT_AREAS_UNO_NOMBRE=("""SELECT nombre FROM Areas WHERE id = (%s)""")
 #-----------------------------------------------------------------------------------------------#
 #Usuario/Objeto/Rentas
 SELECT_USUARIOS=("""SELECT * FROM Usuarios  """)
@@ -44,7 +46,8 @@ SELECT_OBJETOS_UNO=("""SELECT id,nombre,descripcion,cant_disp FROM Objetos  WHER
 SELECT_RENTAS=("""SELECT * FROM Rentas """)
 SELECT_RENTAS_UNO=("""SELECT * FROM Rentas  WHERE Id = (%s)""")
 #MISC
-SELECT_ID_ORG = ("""SELECT id_organizacion FROM facultad WHERE id = (%s)""")
+SELECT_ID_ORG_ALUM = ("""SELECT id_organizacion FROM facultad WHERE id = (%s)""")
+SELECT_ID_ORG_EMP = ("""SELECT id_organizacion FROM Areas WHERE id = (%s)""")
 SELECT_AREAS_ALUM = ("""SELECT * FROM areas WHERE id_organizacion = (%s)""")
 SELECT_AREAS_EMPRESA = ("""SELECT * FROM areas WHERE id = (%s)""")
 
@@ -115,7 +118,7 @@ def data_page():
                 "areas": []
             }
             if user[3] is None and user[4] is not None:
-                cursor.execute(SELECT_ID_ORG, (user[4],))
+                cursor.execute(SELECT_ID_ORG_ALUM, (user[4],))
                 org_code = cursor.fetchone()
                 if org_code:
                     #print(org_code)
@@ -123,9 +126,62 @@ def data_page():
                     areas = cursor.fetchall()
                     response_data["areas"] = [{"id": area[0], "name": area[1]} for area in areas]
             elif user[3] is not None:
+
                 cursor.execute(SELECT_AREAS_EMPRESA, (user[3],))
                 areas = cursor.fetchall()
+                response_data["areas"] = [{"id": area[0], "name": area[1]} for area in areas]
     
+            return jsonify(response_data),200
+                
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)})
+
+@app.route("/profile", methods=["GET"])
+@jwt_required()
+def data_profile():
+    current_user = get_jwt_identity()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(SELECT_USUARIOS_UNO,(current_user,))
+            user = cursor.fetchone()
+           
+            if not user:
+
+                return  jsonify({"error": "No existe el usuario"}), 404
+            
+            response_data = {
+                "message": "Access granted",
+                "user_id": current_user,
+                "Name": user[2],  # Assuming name is at index 2
+                "Org": '',
+                "loc": '',
+                "id":''
+
+            }
+            if user[3] is None and user[4] is not None:
+                cursor.execute(SELECT_ID_ORG_ALUM, (user[4],))
+                org_code = cursor.fetchone()
+                if org_code:
+                    cursor.execute(SELECT_ORGANIZACION_NOMBRE, (org_code,))
+                    nombreorg = cursor.fetchall()
+                    response_data["Org"] = nombreorg
+                    cursor.execute(SELECT_FACULTAD_UN_NOMBRE,(user[4],))
+                    facu = cursor.fetchone()
+                    response_data["loc"] = facu
+                    response_data['id'] = user[0]
+            elif user[3] is not None:
+                cursor.execute(SELECT_ID_ORG_EMP, (user[3],))
+                org_code_emp = cursor.fetchone()
+                if org_code_emp:
+                    cursor.execute(SELECT_AREAS_UNO_NOMBRE, (user[3],))
+                    areanombre = cursor.fetchone()
+                    response_data["loc"] = areanombre
+                    cursor.execute(SELECT_ORGANIZACION_NOMBRE, (org_code_emp,))
+                    nombreorg_emp = cursor.fetchall()
+                    response_data["Org"] = nombreorg_emp
+                    response_data['id'] = user[0]
             return jsonify(response_data),200
                 
     except Exception as e:
@@ -134,12 +190,6 @@ def data_page():
 
 
 
-
-    
-    # return jsonify({
-    #     "message": "Access granted",
-    #     "Name": current_user
-    # }), 200
 
 @app.route("/areas")
 def members():

@@ -1,10 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './perfil.css';
 import './btnMenuStyle.css';
 import './menuStyle.css';
 // import { useState } from 'react';
 
 const ProfileCard = () => {
+    const navigate = useNavigate();
+    const [userData, setUserData] = useState(null);
+    useEffect(() => {
+        const fetchData = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                throw new Error('No token found');
+            }
+        
+            const response = await fetch('http://localhost:5000/profile', {
+                method: 'GET',
+                headers: {
+                'Authorization': `Bearer ${token}`,
+                }
+            });
+        
+            if (!response.ok) {
+                throw new Error('Unauthorized');
+            }
+        
+            const data = await response.json();
+            setUserData(data)
+        
+        } catch (error) {
+            console.error("Error:", error.message);
+            if (error.message === 'Unauthorized' || error.message === 'No token found') {
+                sessionStorage.removeItem('token');
+                navigate('/');
+                }
+            }
+        };     
+       fetchData();
+    }, [navigate]);
+        
+    const logout = () => {
+        sessionStorage.removeItem("token");
+        navigate("/")
+    };
+
     const menuHeader = () => {
         return (
             <>
@@ -23,14 +64,14 @@ const ProfileCard = () => {
     
                     <section className="nombreUsuario">
                         <div className="parteNombreUsuario">
-                            <p className="usuarioName">Francisco Olvera Pérez</p>
+                            <p className="usuarioName">{userData ? userData.Name : 'Loading...'}</p>
                             <a href="./perfil">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                 </svg>
                             </a>
                         </div>
-                        <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
+                        <a id="btnSalir" onClick={logout} style={{ textDecoration: "none" }}>Cerrar sesión</a>
                     </section>
                 </header>
     
@@ -45,14 +86,14 @@ const ProfileCard = () => {
     
                     <section className="nombreUsuario">
                         <div className="parteNombreUsuario">
-                            <p className="usuarioName">Francisco Olvera Pérez</p>
+                            <p className="usuarioName">{userData ? userData.Name : 'Loading...'}</p>
                             <a href="./perfil">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                 </svg>
                             </a>
                         </div>
-                        <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
+                        <a id="btnSalir" onClick={logout} style={{ textDecoration: "none" }}>Cerrar sesión</a>
                     </section>
                 </header>
             </>
@@ -116,11 +157,11 @@ const ProfileCard = () => {
             </svg>
         </div>
         <div class="profile-info">
-            <p class="profile-name">Francisco Olvera Pérez</p>
+            <p class="profile-name">{userData ? userData.Name : 'Loading...'}</p>
             <br/>
-            <div class="profile-name">frolpe@outlook.com</div>
+            <div class="profile-name">{userData ? userData.id : 'Loading...'}</div>
             <br/>
-            <div class="profile-name">Universidad Autonoma de Querétaro - Facultad Informatica</div>
+            <div class="profile-name">{userData ? userData.Org : 'Loading...'} - {userData ? userData.loc : 'Loading...'}</div>
         </div>
         {/* <div class="social-links">
             <button class="social-btn twitter">

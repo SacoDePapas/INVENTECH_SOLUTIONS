@@ -77,7 +77,7 @@ const Inicio = () => {
                             </a>
          
                         </div>
-                        <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
+                        <a id="btnSalir" onClick={logout} style={{ textDecoration: "none" }}>Cerrar sesión</a>
                     </section>
                 </header>
     
@@ -99,7 +99,7 @@ const Inicio = () => {
                                 </svg>
                             </a>
                         </div>
-                        <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
+                        <a id="btnSalir" onClick={logout} style={{ textDecoration: "none" }}>Cerrar sesión</a>
                     </section>
                 </header>
             </>
