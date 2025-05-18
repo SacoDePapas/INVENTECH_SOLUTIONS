@@ -159,7 +159,7 @@ const Inicio = () => {
         { name: 'ID', selector: row => row.id, sortable: true },
         { name: 'Articulo', selector: row => row.nombre, sortable: true },
         { name: 'Descripción', selector: row => row.descripcion, sortable: true },
-        { name: 'Cantidad Disponible', selector: row => row.cantidad, sortable: true },
+        { name: 'Cantidad Disponible', selector: row => row.cant_disp, sortable: true },
     ];
 
     const filteredData = areaData.filter((item) =>

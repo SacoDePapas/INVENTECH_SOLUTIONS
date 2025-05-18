@@ -136,6 +136,50 @@ def data_page():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)})
+    
+
+@app.route("/admin", methods=["GET"])
+@jwt_required()
+def data_admin():
+    current_user = get_jwt_identity()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(SELECT_USUARIOS_UNO,(current_user,))
+            user = cursor.fetchone()
+           
+            if not user:
+
+                return  jsonify({"error": "No existe el usuario"}), 404
+            
+            response_data = {
+                "message": "Access granted",
+                "user_id": current_user,
+                "Name": user[2],  # Assuming name is at index 2
+                "areas": [],
+                "facultades":[],
+                "Encargados":[],
+                "extra":[]
+            }
+            if user[3] is not None and user[4] is not None:
+                cursor.execute(SELECT_ID_ORG_ALUM, (user[4],))
+                org_code = cursor.fetchone()
+                if org_code:
+                    #print(org_code)
+                    cursor.execute(SELECT_AREAS_ALUM, (org_code,))
+                    areas = cursor.fetchall()
+                    response_data["areas"] = [{"id": area[0], "name": area[1]} for area in areas]
+            elif user[3] is not None:
+
+                cursor.execute(SELECT_AREAS_EMPRESA, (user[3],))
+                areas = cursor.fetchall()
+                response_data["areas"] = [{"id": area[0], "name": area[1]} for area in areas]
+    
+            return jsonify(response_data),200
+                
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)})
+
 
 @app.route("/profile", methods=["GET"])
 @jwt_required()
@@ -213,7 +257,7 @@ def login():
                 if Exist and Exist[0] == user and Exist[1]==passw:
 
                     access_token = create_access_token(identity=Exist[0])
-                    return jsonify({'success': True,'message': 'Usuario encontrado','access_token':access_token}), 200
+                    return jsonify({'success': True,'message': f'Bienvenido {Exist[2]}','access_token':access_token,'user_role': Exist[5]}), 200
 
                 return jsonify({'error': True,'message': 'Usuario O contraseña incorrectos'}), 400
             except Exception as e:
@@ -403,6 +447,7 @@ def create_user():
         id_facultad_txt = data.get('Id_facultad')
         Status= "Activo"
         Rol = "User"
+        tipo = "User"
         try:
             cursor.execute(SELECT_USUARIOS_UNO,(id,))
             Exist=cursor.fetchone()

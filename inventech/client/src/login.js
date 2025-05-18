@@ -43,9 +43,21 @@ const Login = () => {
                 title: 'Bienvenido',
                 text: data.message,
             });
-            
             sessionStorage.setItem('token',data.access_token)
-            navigate("/principal")
+            switch(data.user_role){
+                case 'admin':
+                    navigate("/admin");
+                    break;
+                case 'User':
+                    navigate("/principal")
+                    break;
+                case 'Encargado':
+                    navigate("/encargado")
+                    break;
+                default:
+                    navigate('/')
+
+            }
         }catch (error) {
             const { default: Swal } = await import('sweetalert2');
             await Swal.fire({

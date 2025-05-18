@@ -1,5 +1,6 @@
 import React, { useState, useEffect  } from "react";
 import DataTable from "react-data-table-component";
+import { useNavigate } from 'react-router-dom';
 import './admin.css';
 
 // const Radio = () => {
@@ -213,6 +214,41 @@ import './admin.css';
 // };
 
 const Radio = () => {
+        // const navigate = useNavigate();
+        // const [userData, setUserData] = useState(null);
+        // useEffect(() => {
+        //     const fetchData = async () => {
+        //       try {
+        //         const token = sessionStorage.getItem('token');
+        //         if (!token) {
+        //           throw new Error('No token found');
+        //         }
+        
+        //         const response = await fetch('http://localhost:5000/admin', {
+        //           method: 'GET',
+        //           headers: {
+        //             'Authorization': `Bearer ${token}`,
+        //           }
+        //         });
+        
+        //         if (!response.ok) {
+        //           throw new Error('Unauthorized');
+        //         }
+        
+        //         const data = await response.json();
+        //         setUserData(data)
+        
+        //       } catch (error) {
+        //         console.error("Error:", error.message);
+        //         if (error.message === 'Unauthorized' || error.message === 'No token found') {
+        //           sessionStorage.removeItem('token');
+        //           navigate('/');
+        //         }
+        //       }
+        //     };
+        
+        //     fetchData();
+        // }, [navigate]);
     const menuHeader = () => {
         return (
             <>
@@ -268,7 +304,6 @@ const Radio = () => {
         );
     }
     const [selectedOption, setSelectedOption] = useState("tabs");
-    const [userData, setUserData] = useState(null);
     const [search, setSearch] = useState("");
     const [data, setData] = useState({
         tabs: [
@@ -292,11 +327,7 @@ const Radio = () => {
     const [formData, setFormData] = useState({ name: "", area: "" });
     const [editData, setEditData] = useState(null);
 
-    useEffect(() => {
-        setTimeout(() => {
-            setUserData({ Name: "Administrador" });
-        }, 500);
-    }, []);
+
 
     const handleRadioChange = (value) => {
         setSelectedOption(value);
