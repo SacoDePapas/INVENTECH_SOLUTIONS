@@ -3,252 +3,62 @@ import DataTable from "react-data-table-component";
 import { useNavigate } from 'react-router-dom';
 import './admin.css';
 
-// const Radio = () => {
-//     const [selectedOption, setSelectedOption] = useState("tabs");
-//     const [userData, setUserData] = useState(null);
-//     const [search, setSearch] = useState("");
-
-//     useEffect(() => {
-//         setTimeout(() => {
-//             setUserData({ Name: "Administrador" });
-//         }, 500);
-//     }, []);
-
-//     const handleRadioChange = (value) => {
-//         setSelectedOption(value);
-//     };
-
-//     const columns = [
-//         { name: "ID", selector: row => row.id, sortable: true },
-//         { name: "Nombre", selector: row => row.name, sortable: true }
-//     ];
-
-//     const dataTabs = [
-//         { id: 1, name: "Contenido de Tabs A" },
-//         { id: 2, name: "Contenido de Tabs B" },
-//     ];
-
-//     const dataAnd = [
-//         { id: 3, name: "Contenido de And A" },
-//         { id: 4, name: "Contenido de And B" },
-//     ];
-
-//     const dataMore = [
-//         { id: 5, name: "Contenido de More A" },
-//         { id: 6, name: "Contenido de More B" },
-//     ];
-
-//     const dataExtra = [
-//         { id: 7, name: "Contenido Extra A" },
-//         { id: 8, name: "Contenido Extra B" },
-//     ];
-
-//     const getData = () => {
-//         switch (selectedOption) {
-//             case "tabs": return dataTabs;
-//             case "and": return dataAnd;
-//             case "more": return dataMore;
-//             case "extra": return dataExtra;
-//             default: return [];
-//         }
-//     };
-
-//     const filteredData = getData().filter(item =>
-//         item.name.toLowerCase().includes(search.toLowerCase())
-//     );
-
-//     const menuHeader = () => {
-//         return (
-//             <>
-//                 <header className="mainMenu default">
-//                     <a href="./principal" className="hamburger responsive" style={{ marginTop: "0px" }}>
-//                         <input type="checkbox" />
-//                         <svg viewBox="0 0 32 32">
-//                             <path className="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22" />
-//                             <path className="line" d="M7 16 27 16" />
-//                         </svg>
-//                     </a>
-    
-//                     <section className="menuContainer">
-//                         <h1 className="eNombre" href="#" style={{ fontWeight: "450", color: "white" }}>InvenTech Solutions</h1>
-//                     </section>
-    
-//                     <section className="nombreUsuario">
-//                         <div className="parteNombreUsuario">
-//                             <p className="usuarioName">{userData ? userData.Name : 'Loading...'}</p>
-//                             <a href="./perfil">
-//                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-//                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-//                                 </svg>
-//                             </a>
-         
-//                         </div>
-//                         <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
-//                     </section>
-//                 </header>
-    
-//                 <header className="mainMenu responsive" style={{ display: 'none' }}>
-//                     <a href="./principal" className="hamburger">
-//                         <input type="checkbox" />
-//                         <svg viewBox="0 0 32 32">
-//                             <path className="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22" />
-//                             <path className="line" d="M7 16 27 16" />
-//                         </svg>
-//                     </a>
-    
-//                     <section className="nombreUsuario">
-//                         <div className="parteNombreUsuario">
-//                             <p className="usuarioName">{userData ? userData.Name: 'Loading...'}</p>
-//                             <a href="./perfil">
-//                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-//                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-//                                 </svg>
-//                             </a>
-//                         </div>
-//                         <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
-//                     </section>
-//                 </header>
-//             </>
-//         );
-//     }
-
-//     return (
-//         <main>
-//             {menuHeader()}
-//             <div className="Container">
-//                 <br />
-//                 <div className="form-reg" style={{ display: "flex", justifyContent: "space-between", width: "90%"}}>
-//                     <form className="form" style={{ display: "flex", gap: "10px", width: "100%" }}>
-//                         <input
-//                             className="input"
-//                             type="text"
-//                             placeholder="Ingresa el nombre completo"
-//                             style={{ flex: 1 ,width: "50%" }}
-//                         />
-//                         <select className="input" style={{ width: "50%", flex: 1 }}>
-//                             <option value="">Seleccione un área</option>
-//                             <option value="opcion1">Opción 1</option>
-//                             <option value="opcion2">Opción 2</option>
-//                             <option value="opcion3">Opción 3</option>
-//                         </select>
-//                         <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-//                             <button type="submit" className="btn-enviar">
-//                                 Registrar
-//                             </button>
-//                         </div>
-//                     </form>
-//                 </div>
-//                 <br />
-//                 <br />
-//                 <input className="input search" type="search" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
-//                 <br />
-//                 <div className="radio-inputs">
-//                     <label className="radio">
-//                         <input
-//                             type="radio"
-//                             name="radio"
-//                             checked={selectedOption === "tabs"}
-//                             onChange={() => handleRadioChange("tabs")}
-//                         />
-//                         <span className="name">
-//                             <span className="pre-name"></span>
-//                             <span className="pos-name"></span>
-//                             <span> Encargados </span>
-//                         </span>
-//                     </label>
-//                     <label className="radio">
-//                         <input
-//                             type="radio"
-//                             name="radio"
-//                             checked={selectedOption === "and"}
-//                             onChange={() => handleRadioChange("and")}
-//                         />
-//                         <span className="name">
-//                             <span className="pre-name"></span>
-//                             <span className="pos-name"></span>
-//                             <span> Facultades </span>
-//                         </span>
-//                     </label>
-//                     <label className="radio">
-//                         <input
-//                             type="radio"
-//                             name="radio"
-//                             checked={selectedOption === "more"}
-//                             onChange={() => handleRadioChange("more")}
-//                         />
-//                         <span className="name">
-//                             <span className="pre-name"></span>
-//                             <span className="pos-name"></span>
-//                             <span> Área </span>
-//                         </span>
-//                     </label>
-//                     <label className="radio">
-//                         <input
-//                             type="radio"
-//                             name="radio"
-//                             checked={selectedOption === "extra"}
-//                             onChange={() => handleRadioChange("extra")}
-//                         />
-//                         <span className="name">
-//                             <span className="pre-name"></span>
-//                             <span className="pos-name"></span>
-//                             <span> Extra </span>
-//                         </span>
-//                     </label>
-//                 </div>
-
-//                 <div className="content">
-//                     <div className="table-container" style={{ padding: "20px" }}>
-//                         <DataTable
-//                             columns={columns}
-//                             data={filteredData}
-//                             pagination
-//                             highlightOnHover
-//                             responsive
-//                         />
-//                     </div>
-//                 </div>
-//             </div>
-//         </main>
-//     );
-// };
 
 const Radio = () => {
-        // const navigate = useNavigate();
-        // const [userData, setUserData] = useState(null);
-        // useEffect(() => {
-        //     const fetchData = async () => {
-        //       try {
-        //         const token = sessionStorage.getItem('token');
-        //         if (!token) {
-        //           throw new Error('No token found');
-        //         }
+        const navigate = useNavigate();
+        const [userData, setUserData] = useState(null);
+        const [apiData, setApiData] = useState({
+            Encargados: [],
+            Facultades: [],
+            Areas: [],
+            Extra: []
+        });
+        useEffect(() => {
+            const fetchData = async () => {
+              try {
+                const token = sessionStorage.getItem('token');
+                if (!token) {
+                  throw new Error('No token found');
+                }
         
-        //         const response = await fetch('http://localhost:5000/admin', {
-        //           method: 'GET',
-        //           headers: {
-        //             'Authorization': `Bearer ${token}`,
-        //           }
-        //         });
+                const response = await fetch('http://localhost:5000/admin', {
+                  method: 'GET',
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                  }
+                });
         
-        //         if (!response.ok) {
-        //           throw new Error('Unauthorized');
-        //         }
+                if (!response.ok) {
+                  throw new Error('Unauthorized');
+                }
         
-        //         const data = await response.json();
-        //         setUserData(data)
+                const data = await response.json();
+                setUserData(data)
+                setApiData({
+                    Encargados:data.Encargados || [],
+                    Facultades: data.facultades || [],
+                    Areas: data.areas || [],
+                    Extra: data.extra ? [data.extra] : []
+                })
+                console.log(apiData)
         
-        //       } catch (error) {
-        //         console.error("Error:", error.message);
-        //         if (error.message === 'Unauthorized' || error.message === 'No token found') {
-        //           sessionStorage.removeItem('token');
-        //           navigate('/');
-        //         }
-        //       }
-        //     };
+              } catch (error) {
+                console.error("Error:", error.message);
+                if (error.message === 'Unauthorized' || error.message === 'No token found') {
+                  sessionStorage.removeItem('token');
+                  navigate('/');
+                }
+              }
+            };
         
-        //     fetchData();
-        // }, [navigate]);
+            fetchData();
+        }, [navigate]);
+
+
+    const logout = () => {
+        sessionStorage.removeItem("token");
+        navigate("/")
+    }
     const menuHeader = () => {
         return (
             <>
@@ -275,7 +85,7 @@ const Radio = () => {
                             </a>
          
                         </div>
-                        <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
+                        <a id="btnSalir" onClick={logout} style={{ textDecoration: "none" }}>Cerrar sesión</a>
                     </section>
                 </header>
     
@@ -297,7 +107,7 @@ const Radio = () => {
                                 </svg>
                             </a>
                         </div>
-                        <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
+                        <a id="btnSalir" onClick={logout} style={{ textDecoration: "none" }}>Cerrar sesión</a>
                     </section>
                 </header>
             </>
@@ -305,25 +115,6 @@ const Radio = () => {
     }
     const [selectedOption, setSelectedOption] = useState("tabs");
     const [search, setSearch] = useState("");
-    const [data, setData] = useState({
-        tabs: [
-            { id: 1, name: "Contenido de Tabs A", area: "opcion1" },
-            { id: 2, name: "Contenido de Tabs B", area: "opcion2" },
-        ],
-        and: [
-            { id: 3, name: "Contenido de And A", area: "opcion3" },
-            { id: 4, name: "Contenido de And B", area: "opcion1" },
-        ],
-        more: [
-            { id: 5, name: "Contenido de More A", area: "opcion2" },
-            { id: 6, name: "Contenido de More B", area: "opcion3" },
-        ],
-        extra: [
-            { id: 7, name: "Contenido Extra A", area: "opcion1" },
-            { id: 8, name: "Contenido Extra B", area: "opcion2" },
-        ],
-    });
-
     const [formData, setFormData] = useState({ name: "", area: "" });
     const [editData, setEditData] = useState(null);
 
@@ -335,57 +126,170 @@ const Radio = () => {
         setEditData(null);
     };
 
-    const getData = () => data[selectedOption] || [];
+    const getData = () => apiData[selectedOption] || [];
 
     const filteredData = getData().filter(item =>
         item.name.toLowerCase().includes(search.toLowerCase())
     );
-
     const handleEdit = (row) => {
-        setFormData({ name: row.name, area: row.area || "" });
-        setEditData(row);
+    setFormData({ 
+        name: row.name || row.nombre || "", // Handle different field names
+        area: row.area || row.id_area || "" 
+    });
+    setEditData(row);
     };
 
-    const handleDelete = (id) => {
-        const newData = getData().filter(item => item.id !== id);
-        setData(prev => ({
-            ...prev,
-            [selectedOption]: newData
-        }));
-        if (editData?.id === id) {
-            setEditData(null);
-            setFormData({ name: "", area: "" });
+    const handleDelete = async (id) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            if (!token) throw new Error('No token found');
+
+            // Determine endpoint based on selected option
+            let endpoint;
+            switch(selectedOption) {
+                case 'Encargados':
+                    endpoint = '/delete_encargado';
+                    break;
+                case 'Facultades':
+                    endpoint = '/delete_facultad';
+                    break;
+                case 'Areas':
+                    endpoint = '/delete_area';
+                    break;
+                case 'Extra':
+                    endpoint = '/delete_extra';
+                    break;
+                default:
+                    throw new Error('Invalid option');
+            }
+
+            const response = await fetch(`http://localhost:5000${endpoint}/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete');
+            }
+
+            // Update local state after successful API call
+            setApiData(prev => ({
+                ...prev,
+                [selectedOption]: prev[selectedOption].filter(item => item.id !== id)
+            }));
+
+            if (editData?.id === id) {
+                setEditData(null);
+                setFormData({ name: "", area: "" });
+            }
+
+        } catch (error) {
+            console.error("Delete error:", error);
+            alert("Error al eliminar: " + error.message);
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!formData.name.trim()) return;
 
-        if (editData) {
-            const updatedData = getData().map(item =>
-                item.id === editData.id ? { ...item, name: formData.name, area: formData.area } : item
-            );
-            setData(prev => ({
-                ...prev,
-                [selectedOption]: updatedData
-            }));
-        } else {
-            const newId = Math.max(0, ...getData().map(d => d.id)) + 1;
-            const newItem = {
-                id: newId,
-                name: formData.name,
-                area: formData.area
-            };
-            setData(prev => ({
-                ...prev,
-                [selectedOption]: [...getData(), newItem]
-            }));
-        }
+        try {
+            const token = sessionStorage.getItem('token');
+            if (!token) throw new Error('No token found');
 
-        setFormData({ name: "", area: "" });
-        setEditData(null);
+            let endpoint, method, body;
+
+            if (editData) {
+                // Update existing item
+                method = 'PUT';
+                body = JSON.stringify({
+                    id: editData.id,
+                    name: formData.name,
+                    area: formData.area
+                });
+
+                switch(selectedOption) {
+                    case 'Encargados':
+                        endpoint = '/update_encargado';
+                        break;
+                    case 'Facultades':
+                        endpoint = '/update_facultad';
+                        break;
+                    case 'Areas':
+                        endpoint = '/update_area';
+                        break;
+                    case 'Extra':
+                        endpoint = '/update_extra';
+                        break;
+                    default:
+                        throw new Error('Invalid option');
+                }
+            } else {
+                method = 'POST';
+                body = JSON.stringify({
+                    name: formData.name,
+                    area: formData.area
+                });
+
+                switch(selectedOption) {
+                    case 'Encargados':
+                        endpoint = '/create_encargado';
+                        break;
+                    case 'Facultades':
+                        endpoint = '/create_facultad';
+                        break;
+                    case 'Areas':
+                        endpoint = '/create_area';
+                        break;
+                    case 'Extra':
+                        endpoint = '/create_extra';
+                        break;
+                    default:
+                        throw new Error('Invalid option');
+                }
+            }
+
+            const response = await fetch(`http://localhost:5000${endpoint}`, {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body
+            });
+
+            if (!response.ok) {
+                throw new Error(editData ? 'Failed to update' : 'Failed to create');
+            }
+
+            const result = await response.json();
+
+            // Update local state with the response from server
+            if (editData) {
+                setApiData(prev => ({
+                    ...prev,
+                    [selectedOption]: prev[selectedOption].map(item => 
+                        item.id === editData.id ? result : item
+                    )
+                }));
+            } else {
+                setApiData(prev => ({
+                    ...prev,
+                    [selectedOption]: [...prev[selectedOption], result]
+                }));
+            }
+
+            setFormData({ name: "", area: "" });
+            setEditData(null);
+
+        } catch (error) {
+            console.error("Submit error:", error);
+            alert("Error: " + error.message);
+        }
     };
 
     // Custom row style for highlighting the row being edited
@@ -400,9 +304,16 @@ const Radio = () => {
     ];
 
     const columns = [
-        { name: "ID", selector: row => row.id, sortable: true },
-        { name: "Nombre", selector: row => row.name, sortable: true },
-        { name: "Área", selector: row => row.area, sortable: true },
+        {
+            name: "ID", 
+            selector: row => row.id, 
+            sortable: true 
+        },
+        {
+            name: "Nombre", 
+            selector: row => row.name, 
+            sortable: true
+        },
         {
             name: "Acciones",
             cell: (row) => (
@@ -475,11 +386,11 @@ const Radio = () => {
                 <input className="input search" type="search" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
                 <br />
                 <div className="radio-inputs">
-                    {["tabs", "and", "more", "extra"].map(option => (
+                    {Object.keys(apiData).map(option => (
                         <label className="radio" key={option}>
                             <input type="radio" name="radio" checked={selectedOption === option} onChange={() => handleRadioChange(option)}/>
                             <span className="name">
-                                <span>{option === "tabs" ? "Encargados" : option === "and" ? "Facultades" : option === "more" ? "Área" : "Extra"}</span>
+                                <span>{option === "Encargados" ? "Encargados" : option === "Facultades" ? "Facultades" : option === "Areas" ? "Áreas" : "Extra"}</span>
                             </span>
                         </label>
                     ))}

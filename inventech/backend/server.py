@@ -30,6 +30,7 @@ INSERT_RENTAS =("INSERT INTO Rentas (Id_usuario,Id_encargado,Salon,Id_Area,Statu
 #Facultad/Areas
 SELECT_FACULTAD=("""SELECT * FROM Facultad """)
 SELECT_FACULTAD_UNO=("""SELECT * FROM Facultad WHERE id = (%s)""")
+SELECT_FACULTAD_ORG=("""SELECT * FROM Facultad WHERE  id_organizacion = (%s)""")
 SELECT_FACULTAD_UN_NOMBRE=("""SELECT nombre FROM Facultad WHERE id = (%s)""")
 SELECT_AREAS=("""SELECT * FROM Areas """)
 SELECT_AREAS_UNO=("""SELECT * FROM Areas WHERE id = (%s)""")
@@ -50,6 +51,7 @@ SELECT_ID_ORG_ALUM = ("""SELECT id_organizacion FROM facultad WHERE id = (%s)"""
 SELECT_ID_ORG_EMP = ("""SELECT id_organizacion FROM Areas WHERE id = (%s)""")
 SELECT_AREAS_ALUM = ("""SELECT * FROM areas WHERE id_organizacion = (%s)""")
 SELECT_AREAS_EMPRESA = ("""SELECT * FROM areas WHERE id = (%s)""")
+SELECT_ENCARGAOS = ("""SELECT * FROM Usuarios WHERE rol = (%s)""")
 
 
 #UPDATE
@@ -164,10 +166,17 @@ def data_admin():
                 cursor.execute(SELECT_ID_ORG_ALUM, (user[4],))
                 org_code = cursor.fetchone()
                 if org_code:
-                    #print(org_code)
                     cursor.execute(SELECT_AREAS_ALUM, (org_code,))
                     areas = cursor.fetchall()
                     response_data["areas"] = [{"id": area[0], "name": area[1]} for area in areas]
+                    cursor.execute(SELECT_FACULTAD_ORG,(org_code,))
+                    facul = cursor.fetchall()
+                    response_data["facultades"] =[{"id":facu[0], "name": facu[1]}for facu in facul]
+                    cursor.execute(SELECT_ENCARGAOS,("Encargado",))
+                    encargado = cursor.fetchall()
+                    response_data["Encargados"] = [{"id":x[0], "name": x[2]}for x in encargado]
+                    response_data["extra"] = {"id":"1","name":"2"}
+                    
             elif user[3] is not None:
 
                 cursor.execute(SELECT_AREAS_EMPRESA, (user[3],))
