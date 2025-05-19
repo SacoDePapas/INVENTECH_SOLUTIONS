@@ -4,6 +4,7 @@ import Login from './login';
 import Principal from './principal';
 import Perfil from './perfil';
 import Admin from './admin';
+import Enca from './enca';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/principal" element={<Principal />} />
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/enca" element={<Enca />} />
       </Routes>
     </Router>
   );
