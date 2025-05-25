@@ -1,8 +1,60 @@
 import React, { useState, useEffect  } from "react";
 import DataTable from "react-data-table-component";
+import { useNavigate } from 'react-router-dom';
 import './enca.css';
 
 const Radio = () => {
+        const navigate = useNavigate();
+        const [userData, setUserData] = useState(null);
+        const [apiData, setApiData] = useState({
+            Disponible: [],
+            Inventario: [],
+            Prestamos: []
+        });
+        useEffect(() => {
+            const fetchData = async () => {
+              try {
+                const token = sessionStorage.getItem('token');
+                if (!token) {
+                  throw new Error('No token found');
+                }
+        
+                const response = await fetch('http://localhost:5000/enca_data', {
+                  method: 'GET',
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                  }
+                });
+        
+                if (!response.ok) {
+                  throw new Error('Unauthorized');
+                }
+        
+                const data = await response.json();
+                setUserData(data)
+                setApiData({
+                    Disponible:data.disponible || [],
+                    Inventario: data.inventario || [],
+                    Prestamos: data.prestamos || []
+                })
+        
+              } catch (error) {
+                console.error("Error:", error.message);
+                if (error.message === 'Unauthorized' || error.message === 'No token found') {
+                  sessionStorage.removeItem('token');
+                  navigate('/');
+                }
+              }
+            };
+        
+            fetchData();
+        }, [navigate]);
+
+    const logout = () => {
+        sessionStorage.removeItem("token");
+        navigate("/")
+    }
+
     const menuHeader = () => {
         return (
             <>
@@ -29,7 +81,7 @@ const Radio = () => {
                             </a>
          
                         </div>
-                        <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
+                        <a id="btnSalir" onClick={logout} style={{ textDecoration: "none" }}>Cerrar sesión</a>
                     </section>
                 </header>
     
@@ -51,7 +103,7 @@ const Radio = () => {
                                 </svg>
                             </a>
                         </div>
-                        <a id="btnSalir" href="./" style={{ textDecoration: "none" }}>Cerrar sesión</a>
+                        <a id="btnSalir" onClick={logout} style={{ textDecoration: "none" }}>Cerrar sesión</a>
                     </section>
                 </header>
             </>
@@ -64,50 +116,43 @@ const Radio = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({ expediente: '', detalles: '', cantidad: 1 });
     const [selectedOption, setSelectedOption] = useState("tabs");
-    const [userData, setUserData] = useState(null);
     const [search, setSearch] = useState("");
-    const [data, setData] = useState({
-        tabs: [
-            { id: "1263", name: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
-            { id: "1264", name: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
-            { id: "1265", name: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
-            { id: "1266", name: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
-            { id: "1267", name: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
-            { id: "1268", name: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
-            { id: "1269", name: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
-            { id: "1270", name: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
-            { id: "1271", name: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
-            { id: "1272", name: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
-            { id: "1273", name: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
-            { id: "1274", name: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
-            { id: "1275", name: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
-            { id: "1276", name: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
-            { id: "1277", name: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
-            { id: "1278", name: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
-        ],
-        and: [
-            { id: "1263", name: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
-            { id: "1264", name: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
-            { id: "1265", name: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
-            { id: "1266", name: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
-            { id: "1267", name: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
-        ],
-        more: [
-            { id: "1263", name: "Cable Ethernet", expediente: "307040", cantidad: 1 },
-            { id: "1264", name: "Cable HDMI", expediente: "306290", cantidad: 5 },
-            { id: "1265", name: "Router TP-Link", expediente: "305046", cantidad: 3 },
-            { id: "1266", name: "Switch TP-Link", expediente: "286589", cantidad: 1 },
-            { id: "1267", name: "Access Point TP-Link", expediente: "312025", cantidad: 4 },
-        ]
-    });
+    const [data, setData] = useState("");//useState({
+    //     tabs: [
+    //         { id: "1263", name: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
+    //         { id: "1264", name: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
+    //         { id: "1265", name: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
+    //         { id: "1266", name: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
+    //         { id: "1267", name: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
+    //         { id: "1268", name: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
+    //         { id: "1269", name: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
+    //         { id: "1270", name: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
+    //         { id: "1271", name: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
+    //         { id: "1272", name: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
+    //         { id: "1273", name: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
+    //         { id: "1274", name: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
+    //         { id: "1275", name: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
+    //         { id: "1276", name: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
+    //         { id: "1277", name: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
+    //         { id: "1278", name: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
+    //     ],
+    //     and: [
+    //         { id: "1263", name: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
+    //         { id: "1264", name: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
+    //         { id: "1265", name: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
+    //         { id: "1266", name: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
+    //         { id: "1267", name: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
+    //     ],
+    //     more: [
+    //         { id: "1263", name: "Cable Ethernet", expediente: "307040", cantidad: 1 },
+    //         { id: "1264", name: "Cable HDMI", expediente: "306290", cantidad: 5 },
+    //         { id: "1265", name: "Router TP-Link", expediente: "305046", cantidad: 3 },
+    //         { id: "1266", name: "Switch TP-Link", expediente: "286589", cantidad: 1 },
+    //         { id: "1267", name: "Access Point TP-Link", expediente: "312025", cantidad: 4 },
+    //     ]
+    // });
 
     const [editData, setEditData] = useState(null);
-
-    useEffect(() => {
-        setTimeout(() => {
-            setUserData({ Name: "Encargado" });
-        }, 500);
-    }, []);
 
     // const handleRadioChange = (value) => {
     //     setSelectedOption(value);
@@ -115,7 +160,18 @@ const Radio = () => {
     //     setEditData(null);
     // };
 
-    const getData = () => data[selectedOption] || [];
+    const getData = () => {
+        switch(selectedOption) {
+            case "tabs":
+                return apiData.Disponible || [];
+            case "and":
+                return apiData.Inventario || [];
+            case "more":
+                return apiData.Prestamos || [];
+            default:
+                return [];
+        }
+    };
 
     // const filteredData = getData().filter(item =>
     //     item.name.toLowerCase().includes(search.toLowerCase())
@@ -125,7 +181,7 @@ const Radio = () => {
     );
 
     const handleEdit = (row) => {
-        setFormData({ name: row.name, area: row.area || "" });
+        setFormData({ name: row.nombre, descripcion: row.descripcion,cantidad:row.cantidad || "" });
         setEditData(row);
     };
 
@@ -311,10 +367,10 @@ const Radio = () => {
     let columns = [];
     if (selectedOption === "tabs" || selectedOption === "and") {
         columns = [
-            { name: "ID", selector: row => row.id, sortable: true },
-            { name: "Nombre", selector: row => row.nombre || row.name, sortable: true },
-            { name: "Descripción", selector: row => row.descripcion || "", sortable: true },
-            { name: "Cantidad disponible", selector: row => row.cantidad !== undefined ? row.cantidad : "", sortable: true },
+            { name: "ID", selector: row => row.id || row.ID, sortable: true },
+            { name: "Nombre", selector: row => row.nombre || row.Nombre, sortable: true },
+            { name: "Descripción", selector: row => row.descripcion || row.Descripcion || "", sortable: true },
+            { name: "Cantidad disponible", selector: row => row.cantidad !== undefined ? row.cantidad : (row.Cantidad !== undefined ? row.Cantidad : ""), sortable: true },
             {
                 name: "Acciones",
                 cell: getActionsCell,
@@ -322,10 +378,10 @@ const Radio = () => {
         ];
     } else if (selectedOption === "more") {
         columns = [
-            { name: "ID", selector: row => row.id, sortable: true },
-            { name: "Nombre", selector: row => row.nombre || row.name, sortable: true },
-            { name: "Expediente", selector: row => row.expediente || "", sortable: true },
-            { name: "Cantidad", selector: row => row.cantidad !== undefined ? row.cantidad : "", sortable: true },
+            { name: "ID", selector: row => row.id || row.ID, sortable: true },
+            { name: "Nombre", selector: row => row.nombre || row.Nombre, sortable: true },
+            { name: "Expediente", selector: row => row.expediente || row.Expediente || "", sortable: true },
+            { name: "Cantidad", selector: row => row.cantidad !== undefined ? row.cantidad : (row.Cantidad !== undefined ? row.Cantidad : ""), sortable: true },
             {
                 name: "Acciones",
                 cell: getActionsCell,

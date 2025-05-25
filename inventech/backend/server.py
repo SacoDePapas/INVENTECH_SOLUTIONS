@@ -44,7 +44,10 @@ SELECT_USUARIOS_UNO=("""SELECT * FROM Usuarios  WHERE Id = (%s)""")
 SELECT_OBJETOS=("""SELECT * FROM Objetos """)
 SELECT_OBJETOS_UNO_EDITAR=("""SELECT * FROM Objetos  WHERE nombre = (%s)""")
 SELECT_OBJETOS_UNO=("""SELECT id,nombre,descripcion,cant_disp FROM Objetos  WHERE id_area = (%s)""")
+SELECT_OBJETOS_DISP=("""SELECT * FROM objetos WHERE cant_disp > 0 AND id_area = (%s)""")
 SELECT_RENTAS=("""SELECT * FROM Rentas """)
+SELECT_RENTAS_AREA=("""SELECT * FROM Rentas WHERE id_area = (%s)""")
+#SELECT * FROM objetos WHERE cant_disp > 0 AND id_area = :id_area
 SELECT_RENTAS_UNO=("""SELECT * FROM Rentas  WHERE Id = (%s)""")
 #MISC
 SELECT_ID_ORG_ALUM = ("""SELECT id_organizacion FROM facultad WHERE id = (%s)""")
@@ -138,7 +141,62 @@ def data_page():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)})
-    
+
+
+@app.route("/enca_data", methods=["GET"])
+@jwt_required()
+def enca_data():
+    current_user = get_jwt_identity()
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(SELECT_USUARIOS_UNO,(current_user,))
+            user = cursor.fetchone()
+           
+            if not user:
+
+                return  jsonify({"error": "No existe el usuario"}), 404
+            
+            response_data = {
+                "message": "Access granted",
+                "user_id": current_user,
+                "Name": user[2],  # Assuming name is at index 2
+                "disponible": [],
+                "inventraio": [],
+                "prestamos":[]
+
+            }
+            if user[3] is not None and user[4] is not None:
+                cursor.execute(SELECT_ID_ORG_ALUM, (user[4],))
+                org_code = cursor.fetchone()
+                if org_code:
+                    #print(org_code)
+                    cursor.execute(SELECT_OBJETOS_DISP, (user[3],))
+                    objetos = cursor.fetchall()
+                    response_data["disponible"] = [{"id": objeto[0], "nombre": objeto[1],"descripcion": objeto[2],"cantidad": objeto[4]} for objeto in objetos]
+                    cursor.execute(SELECT_OBJETOS_UNO, (user[3],))
+                    inventarios = cursor.fetchall()
+                    response_data["inventario"] = [{"id": inv[0], "nombre": inv[1],"descripcion": inv[2],"cantidad": inv[3]} for inv in inventarios]
+                    cursor.execute(SELECT_RENTAS_AREA, (user[3],))
+                    rentas = cursor.fetchall()
+                    response_data["prestamos"] = [{"id": renta[0], "nombre": renta[6],"expediente": renta[1],"cantidad": renta[3]} for renta in rentas]
+
+
+                    
+            elif user[3] is not None:
+
+                cursor.execute(SELECT_OBJETOS_DISP, (user[3],))
+                objetos = cursor.fetchall()
+                response_data["disponible"] = [{"id": objeto[0], "name": objeto[1],"descripcion": objeto[2],"cant_disp": objeto[4]} for objeto in objetos]
+            return jsonify(response_data),200
+                
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)})
+
+
+
+
 
 @app.route("/admin", methods=["GET"])
 @jwt_required()

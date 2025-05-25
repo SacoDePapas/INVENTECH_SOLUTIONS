@@ -52,7 +52,7 @@ const Login = () => {
                     navigate("/principal")
                     break;
                 case 'Encargado':
-                    navigate("/encargado")
+                    navigate("/enca")
                     break;
                 default:
                     navigate('/')
