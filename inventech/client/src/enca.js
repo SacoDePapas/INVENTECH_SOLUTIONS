@@ -155,19 +155,9 @@ const Radio = () => {
         setSelectedOption(option);
     };
 
-    const abrirPopup = async (area) => {
-        setSelectedArea(area);
-        setIsLoading(true);
-        try {
-        const response = await fetch(`/get-objetos?area=${area.id}`);
-        const data = await response.json();
-        setAreaData(data);
+    const abrirPopup =  (row) => {
+        setFormData({ name: row.nombre|| "" });
         setPopupVisible(true);
-        } catch (error) {
-        console.error("Error fetching area data:", error);
-        } finally {
-        setIsLoading(false);
-        }
     };
 
     const cerrarPopup = () => {
@@ -183,12 +173,13 @@ const Radio = () => {
 
     const handleFormSubmit = async () => {
         try {
-        const res = await fetch('/registrar-prestamo', {
+        const res = await fetch('/create_rentas', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
             ...formData,
-            areaId: selectedArea.id
+            enca_id:userData.user_id,
+            areaId: userData.id_area
             })
         });
         if (res.ok) {
@@ -203,7 +194,7 @@ const Radio = () => {
     };
     const handleUpdate = async () =>{
         try{
-            const res = await fetch('/registrar-prestamo', {
+            const res = await fetch('/update_objeto', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -212,9 +203,10 @@ const Radio = () => {
                 })
             });
             if(res.ok) {
-                alert("Objeto creado");
+                alert("Objeto Actualizado");
+                window.location.reload();
             }else{
-                alert("Error al registrar Objeto");
+                alert("Error al actualizar Objeto");
             }
 
         }catch (err) {
@@ -222,17 +214,23 @@ const Radio = () => {
         }
     }
 
-    const handleDelete = (id) => {
-        const newData = getData().filter(item => item.id !== id);
-        setData(prev => ({
-            ...prev,
-            [selectedOption]: newData
-        }));
-        if (editData?.id === id) {
-            setEditData(null);
-            setFormData({ name: "", area: "" });
-        }
-    };
+const handleDelete = async (id) => {
+  try {
+    // Send DELETE request to Flask backend
+    const response = await fetch(`/delete_objeto/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete object');
+    }
+    window.location.reload();
+
+  } catch (error) {
+    console.error('Error deleting object:', error);
+    alert('Error deleting object. Please try again.');
+  }
+};
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -258,6 +256,7 @@ const Radio = () => {
             });
             if(res.ok) {
                 alert("Objeto creado");
+                window.location.reload();
             }else{
                 alert("Error al registrar Objeto");
             }
@@ -280,7 +279,7 @@ const Radio = () => {
     const getActionsCell = (row) => {
         if (selectedOption === "tabs") {
             return (
-                <button type="button" class="button-add" onClick={() => setPopupVisible(true)}>
+                <button type="button" class="button-add" onClick={() => abrirPopup(row)}>
                     <span class="button__text">Registrar</span>
                     <span class="button__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19" x1="5"></line></svg></span>
                 </button>
@@ -424,9 +423,11 @@ const Radio = () => {
                                 <div className="formPopup" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                                     <h1 style={{ fontSize: "2rem", fontWeight: "400", color: "#000", textAlign: "center"}}>Registrar Préstamo</h1>
                                     <br />
+                                    <input className="input" type="hidden" name="nombre_item" placeholder="Ingrese el expediente" value={formData.name} onChange={handleFormChange} />
+                                    <input className="input" type="hidden" name="expediente_enca" placeholder="Ingrese el expediente" value={userData.user_id} onChange={handleFormChange} />
                                     <h4 style={{ fontSize: "1rem", fontWeight: "400", color: "#000"}}>Expediente</h4>
                                     <input className="input" type="text" name="expediente" placeholder="Ingrese el expediente" value={formData.expediente} onChange={handleFormChange} style={{border: " 1px solid #000"}}/>
-                                    <h4 style={{ fontSize: "1rem", fontWeight: "400", color: "#000"}}>Detalles</h4>
+                                    <h4 style={{ fontSize: "1rem", fontWeight: "400", color: "#000"}}>Salon</h4>
                                     <input className="input" type="text" name="detalles" placeholder="Ingrese los detalles" value={formData.detalles}onChange={handleFormChange} style={{border: " 1px solid #000"}}/>
                                     <h4 style={{ fontSize: "1rem", fontWeight: "400", color: "#000"}}>Cantidad</h4>
                                     <input className="input" type="number" name="cantidad" placeholder="Ingrese la cantidad" min={1} value={formData.cantidad} onChange={handleFormChange} style={{border: " 1px solid #000", width: "20%", paddingLeft: "1rem"}}/>

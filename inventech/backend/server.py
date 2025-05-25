@@ -67,8 +67,8 @@ UPDATE_AREAS =("UPDATE Area SET nombre = (%s), id_organizacion = (%s) WHERE Id =
 #Usuario/Objeto/Rentas
 
 UPDATE_USUARIO =("UPDATE Usuario SET Id = (%s), nombre = (%s),Id_facultad = (%s),Rol= (%s),Status = (%s) WHERE Id = (%s);")
-UPDATE_OBJETO =("UPDATE Objeto SET nombre = (%s), descripcion = (%s),cant = (%s),cant_disp= (%s),id_area = (%s),Status = (%s) WHERE Id = (%s);")
-UPDATE_RENTAS =("UPDATE Objeto SET Status = (%s) WHERE Id = (%s);")
+UPDATE_OBJETO =("UPDATE Objetos SET nombre = (%s), descripcion = (%s),cant = (%s),cant_disp= (%s),id_area = (%s),Status = (%s) WHERE Id = (%s);")
+UPDATE_RENTAS =("UPDATE Objetos SET Status = (%s) WHERE Id = (%s);")
 
 
 #DELETE
@@ -604,7 +604,6 @@ def create_objeto():
             cant = int(data.get('cantidad'))
             cant_disp = int(data.get('cantidad'))
             id_Area = int(data.get('areaId'))
-            print(type(cant),type(cant_disp),type(id_Area))
             Status= "Activo"
             cursor.execute(SELECT_OBJETOS_UNO_EDITAR, (nombre,))
             Exist = cursor.fetchone()
@@ -623,47 +622,54 @@ def create_objeto():
             return jsonify({"error": str(e)}), 500
 
 
-@app.route("/delete_objeto",methods=["POST"])
-def delete_objeto():
-    data=request.get_json()
-    if not data:
-        app.logger.info(f"No data")
-        return jsonify({"error": "No data provided"}), 400
+@app.route('/delete_objeto/<int:id>', methods=['DELETE'])
+def delete_objeto(id):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id FROM objetos WHERE id = %s", (id,))
+            if not cursor.fetchone():
+                return jsonify({"error": "Object not found"}), 404
+            
+            cursor.execute("DELETE FROM objetos WHERE id = %s", (id,))
+            connection.commit()
+            return jsonify({"success": True}), 200
+            
+    except Exception as e:
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
 
-    with connection.cursor() as cursor:
-        id_txt = data.get('Id')
-        id = int(id_txt)
-        try:
-            cursor.execute(DELETE_OBJETO,(id))
-            cursor.commit()
-        except Exception as e :
-            return jsonify({"error": str(e)})
-    return {"Nose":"nose"}
-
-
-@app.route("/update_objeto",methods=["POST"])
+@app.route("/update_objeto",methods=["PATCH"])
 def update_objeto():
     data=request.get_json()
     if not data:
         app.logger.info(f"No data")
         return jsonify({"error": "No data provided"}), 400
-
+    #print(data)
     with connection.cursor() as cursor:
-        id_txt = data.get('Id')
-        id = int(id_txt)
-        nombre = data.get('name')
-        desc = data.get('desc')
-        cant = int(data.get('cant'))
-        cant_disp = int(data.get('cant_disp'))
-        id_Area = int(data.get('id-area'))
-        Status= "Activo"
-
         try:
-            cursor.execute(UPDATE_OBJETO,(nombre,desc,cant,cant_disp,id_Area,Status,id))
-            cursor.commit()
-        except Exception as e :
-            return jsonify({"error": str(e)})
-    return {"Nose":"nose"}
+            print(data)
+            id = data.get('id')
+            nombre = data.get('name')
+            desc = data.get('descripcion')
+            cant = int(data.get('cantidad'))
+            cant_disp = int(data.get('cantidad'))
+            id_Area = int(data.get('areaId'))
+            Status= "Activo"
+            cursor.execute(SELECT_OBJETOS_UNO_EDITAR, (nombre,))
+            Exist = cursor.fetchone()
+            print(Exist)
+            if Exist:
+                cursor.execute(UPDATE_OBJETO, (nombre, desc, cant, cant_disp, id_Area, Status, id))
+                connection.commit()
+                return {"Success": "Se actualizo el Objeto"}
+            else:
+                connection.rollback()
+                return {"Error": "No existe el objeto"}
+
+        except Exception as e:
+            connection.rollback()
+            app.logger.error(f"Error updating objeto: {e}")
+            return jsonify({"error": str(e)}), 500
 
 @app.route("/get-objetos")
 def show_objetos():
@@ -689,19 +695,28 @@ def show_objetos():
 @app.route("/create_rentas",methods=["POST"])
 def create_rentas():
     data=request.get_json()
-    if not data:
-        app.logger.info(f"No data")
-        return jsonify({"error": "No data provided"}), 400
-    
-    with connection.cursor() as cursor:
-        name = data.get('name')
-        id__organizacion = int(data.get('org-code'))
-        try:
-            cursor.execute(INSERT_AREAS,(name,id__organizacion))
-            connection.commit()
-            return jsonify({'success': True,'message': 'User registered successfully'}), 200
-        except Exception as e:
-            return jsonify({'error': True,'message': f'Ocurrio un error {e}'}), 400
+    print(data)
+    #{'name': 'Cautin', 'expediente': '307083', 'detalles': 'A25', 'cantidad': '1', 'areaId': 1}
+    # if not data:
+    #     app.logger.info(f"No data")
+    #     return jsonify({"error": "No data provided"}), 400
+    # with connection.cursor() as cursor:
+    #     try:
+    #         nombre = data.get('name')
+    #         expeR = data.get('expediente')
+    #         cant = int(data.get('cantidad'))
+    #         #cant_disp = int(data.get('cantidad'))
+    #         detalles = data.get('detalles')
+    #         id_Area = int(data.get('areaId'))
+    #         Status= "Activo"
+    #         cursor.execute(INSERT_RENTAS, (nombre, expeR, cant, id_Area, Status))
+    #         connection.commit()
+    #         return {"Success": "Se creo la renta"}
+           
+    #     except Exception as e:
+    #         connection.rollback()
+    #         app.logger.error(f"Error creating renta: {e}")
+    #         return jsonify({"error": str(e)}), 500
 
     return {"Nose":"nose"}
 
@@ -715,7 +730,7 @@ def delete_renta():
     return {"Nose":"nose"}
 
 
-@app.route("/update_objeto",methods=["POST"])
+@app.route("/update_renta",methods=["POST"])
 def update_renta():
     data=request.get_json()
     if not data:
