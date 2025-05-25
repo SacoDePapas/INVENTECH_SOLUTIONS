@@ -117,41 +117,7 @@ const Radio = () => {
     const [formData, setFormData] = useState({ expediente: '', detalles: '', cantidad: 1 });
     const [selectedOption, setSelectedOption] = useState("tabs");
     const [search, setSearch] = useState("");
-    const [data, setData] = useState("");//useState({
-    //     tabs: [
-    //         { id: "1263", name: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
-    //         { id: "1264", name: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
-    //         { id: "1265", name: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
-    //         { id: "1266", name: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
-    //         { id: "1267", name: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
-    //         { id: "1268", name: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
-    //         { id: "1269", name: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
-    //         { id: "1270", name: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
-    //         { id: "1271", name: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
-    //         { id: "1272", name: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
-    //         { id: "1273", name: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
-    //         { id: "1274", name: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
-    //         { id: "1275", name: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
-    //         { id: "1276", name: "Cable de red UTP Cat6", descripcion: "Cable de red UTP Cat6 de 30 metros", cantidad: 15 },
-    //         { id: "1277", name: "Router Netgear Nighthawk RAX80", descripcion: "Router Netgear Nighthawk RAX80 con Wi-Fi 6 y 8 puertos Ethernet", cantidad: 2 },
-    //         { id: "1278", name: "Switch Cisco SG350-10-K9-NA", descripcion: "Switch Cisco SG350-10-K9-NA y administración avanzada", cantidad: 6 },
-    //     ],
-    //     and: [
-    //         { id: "1263", name: "Cable Ethernet", descripcion: "10 gigabits con hasta 250 MHz", cantidad: 10 },
-    //         { id: "1264", name: "Cable HDMI", descripcion: "HDMI 2.1, 8K a 60Hz", cantidad: 5 },
-    //         { id: "1265", name: "Router TP-Link", descripcion: "TP-Link Archer AX73", cantidad: 3 },
-    //         { id: "1266", name: "Switch TP-Link", descripcion: "TP-Link TL-SG108E", cantidad: 8 },
-    //         { id: "1267", name: "Access Point TP-Link", descripcion: "TP-Link EAP245 V3", cantidad: 4 },
-    //     ],
-    //     more: [
-    //         { id: "1263", name: "Cable Ethernet", expediente: "307040", cantidad: 1 },
-    //         { id: "1264", name: "Cable HDMI", expediente: "306290", cantidad: 5 },
-    //         { id: "1265", name: "Router TP-Link", expediente: "305046", cantidad: 3 },
-    //         { id: "1266", name: "Switch TP-Link", expediente: "286589", cantidad: 1 },
-    //         { id: "1267", name: "Access Point TP-Link", expediente: "312025", cantidad: 4 },
-    //     ]
-    // });
-
+    const [data, setData] = useState("");
     const [editData, setEditData] = useState(null);
 
     // const handleRadioChange = (value) => {
@@ -181,7 +147,7 @@ const Radio = () => {
     );
 
     const handleEdit = (row) => {
-        setFormData({ name: row.nombre, descripcion: row.descripcion,cantidad:row.cantidad || "" });
+        setFormData({ id:row.id,name: row.nombre, descripcion: row.descripcion,cantidad:row.cantidad || "" });
         setEditData(row);
     };
 
@@ -235,6 +201,26 @@ const Radio = () => {
         console.error(err);
         }
     };
+    const handleUpdate = async () =>{
+        try{
+            const res = await fetch('/registrar-prestamo', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                ...formData,
+                areaId:userData.id_area
+                })
+            });
+            if(res.ok) {
+                alert("Objeto creado");
+            }else{
+                alert("Error al registrar Objeto");
+            }
+
+        }catch (err) {
+            console.error(err);
+        }
+    }
 
     const handleDelete = (id) => {
         const newData = getData().filter(item => item.id !== id);
@@ -250,33 +236,36 @@ const Radio = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (!formData.name.trim()) return;
-
-        if (editData) {
-            const updatedData = getData().map(item =>
-                item.id === editData.id ? { ...item, name: formData.name, area: formData.area } : item
-            );
-            setData(prev => ({
-                ...prev,
-                [selectedOption]: updatedData
-            }));
-        } else {
-            const newId = Math.max(0, ...getData().map(d => d.id)) + 1;
-            const newItem = {
-                id: newId,
-                name: formData.name,
-                area: formData.area
-            };
-            setData(prev => ({
-                ...prev,
-                [selectedOption]: [...getData(), newItem]
-            }));
+        if(editData){
+            handleUpdate();
+        }else{
+            handleCreate();
         }
 
-        setFormData({ name: "", area: "" });
+
+        setFormData({ name: "", descripcion: "" ,cantidad:""});
         setEditData(null);
     };
+    const handleCreate = async () =>{
+        try{
+            const res = await fetch('/create_objeto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                ...formData,
+                areaId:userData.id_area
+                })
+            });
+            if(res.ok) {
+                alert("Objeto creado");
+            }else{
+                alert("Error al registrar Objeto");
+            }
+
+        }catch (err) {
+            console.error(err);
+        }
+    }
 
     const conditionalRowStyles = [
         {
@@ -397,6 +386,7 @@ const Radio = () => {
                 {selectedOption === "and" && (
                     <div className="form-reg" style={{ display: "flex", justifyContent: "space-between", width: "90%" }}>
                         <form className="form" style={{ display: "flex", gap: "10px", width: "100%" }} onSubmit={handleSubmit}>
+                            <input className="input" type="hidden" placeholder="id" value={formData.id} onChange={(e) => setFormData({ ...formData, id: e.target.value })} />
                             <input className="input" type="text" placeholder="Ingresa el nombre completo" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={{flex: 1, width: "50%", borderColor: editData ? "#ff0000" : undefined, boxShadow: editData ? "0 0 0 1px #ff0000" : undefined}}/>
                             <input className="input" type="text" placeholder="Ingresa la descripción" value={formData.descripcion} onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })} style={{flex: 1, width: "50%", borderColor: editData ? "#ff0000" : undefined, boxShadow: editData ? "0 0 0 1px #ff0000" : undefined}}/>
                             <input className="input" type="number" placeholder="Cantidad disponible" value={formData.cantidad || ""} onChange={(e) => setFormData({ ...formData, cantidad: e.target.value })} style={{flex: 1, width: "50%", borderColor: editData ? "#ff0000" : undefined, boxShadow: editData ? "0 0 0 1px #ff0000" : undefined}}/>

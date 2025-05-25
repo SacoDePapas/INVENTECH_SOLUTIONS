@@ -44,6 +44,7 @@ SELECT_USUARIOS_UNO=("""SELECT * FROM Usuarios  WHERE Id = (%s)""")
 SELECT_OBJETOS=("""SELECT * FROM Objetos """)
 SELECT_OBJETOS_UNO_EDITAR=("""SELECT * FROM Objetos  WHERE nombre = (%s)""")
 SELECT_OBJETOS_UNO=("""SELECT id,nombre,descripcion,cant_disp FROM Objetos  WHERE id_area = (%s)""")
+SELECT_OBJETOS_CREATE=("""SELECT id,nombre,descripcion,cant_disp FROM Objetos  WHERE nombre = (%s)""")
 SELECT_OBJETOS_DISP=("""SELECT * FROM objetos WHERE cant_disp > 0 AND id_area = (%s)""")
 SELECT_RENTAS=("""SELECT * FROM Rentas """)
 SELECT_RENTAS_AREA=("""SELECT * FROM Rentas WHERE id_area = (%s)""")
@@ -161,6 +162,7 @@ def enca_data():
                 "message": "Access granted",
                 "user_id": current_user,
                 "Name": user[2],  # Assuming name is at index 2
+                "id_area": "",
                 "disponible": [],
                 "inventraio": [],
                 "prestamos":[]
@@ -168,6 +170,7 @@ def enca_data():
             }
             if user[3] is not None and user[4] is not None:
                 cursor.execute(SELECT_ID_ORG_ALUM, (user[4],))
+                response_data["id_area"] = user[3]
                 org_code = cursor.fetchone()
                 if org_code:
                     #print(org_code)
@@ -593,25 +596,32 @@ def create_objeto():
     if not data:
         app.logger.info(f"No data")
         return jsonify({"error": "No data provided"}), 400
-
+    #print(data)
     with connection.cursor() as cursor:
-        nombre = data.get('name')
-        desc = data.get('desc')
-        cant = int(data.get('cant'))
-        cant_disp = int(data.get('cant_disp'))
-        id_Area = int(data.get('id-area'))
-        Status= "Activo"
         try:
-            cursor.execute(SELECT_OBJETOS_UNO,(nombre,))
-            Exist=cursor.fetchone()
+            nombre = data.get('name')
+            desc = data.get('descripcion')
+            cant = int(data.get('cantidad'))
+            cant_disp = int(data.get('cantidad'))
+            id_Area = int(data.get('areaId'))
+            print(type(cant),type(cant_disp),type(id_Area))
+            Status= "Activo"
+            cursor.execute(SELECT_OBJETOS_UNO_EDITAR, (nombre,))
+            Exist = cursor.fetchone()
+            print(Exist)
             if not Exist:
-                cursor.execute(INSERT_OBJETO,(nombre,desc,cant,cant_disp,id_Area,Status))
+                cursor.execute(INSERT_OBJETO, (nombre, desc, cant, cant_disp, id_Area, Status))
                 connection.commit()
-                return {"Success":"Se creo el Objeto"}     
-            return {"Error":"Existe el objeto"}
-        except Exception as e :
-            return jsonify({"error": str(e)})
-    return {"Nose":"nose"}
+                return {"Success": "Se creo el Objeto"}
+            else:
+                connection.rollback()
+                return {"Error": "Existe el objeto"}
+
+        except Exception as e:
+            connection.rollback()
+            app.logger.error(f"Error creating objeto: {e}")
+            return jsonify({"error": str(e)}), 500
+
 
 @app.route("/delete_objeto",methods=["POST"])
 def delete_objeto():
