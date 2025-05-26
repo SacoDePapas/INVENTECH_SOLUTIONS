@@ -185,6 +185,7 @@ const Radio = () => {
         if (res.ok) {
             alert("Préstamo registrado exitosamente");
             cerrarPopup();
+            window.location.reload();
         } else {
             alert("Error al registrar préstamo");
         }
@@ -203,7 +204,12 @@ const Radio = () => {
                 })
             });
             if(res.ok) {
-                alert("Objeto Actualizado");
+                const { default: Swal } = await import('sweetalert2');
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Exito',
+                    text: 'El Objeto se actualizo',
+                });
                 window.location.reload();
             }else{
                 alert("Error al actualizar Objeto");
@@ -214,22 +220,57 @@ const Radio = () => {
         }
     }
 
-const handleDelete = async (id) => {
-  try {
-    // Send DELETE request to Flask backend
-    const response = await fetch(`/delete_objeto/${id}`, {
-      method: 'DELETE',
+const handleDelete = async (id,endpointType) => {
+    const { default: Swal } = await import('sweetalert2');
+    const { value: isConfirmed } = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¡No podrás revertir esto!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, borrarlo',
+        cancelButtonText: 'Cancelar'
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to delete object');
-    }
-    window.location.reload();
+    if (isConfirmed) {
+        try {
+            let url;
 
-  } catch (error) {
-    console.error('Error deleting object:', error);
-    alert('Error deleting object. Please try again.');
-  }
+            // Determine which Flask endpoint to call
+            if (endpointType === 'objeto') {
+                url = `/delete_objeto/${id}`;
+            } else if (endpointType === 'renta') {
+                url = `/delete_renta/${id}`;
+            } else {
+                console.error('Unknown endpoint type');
+                return;
+            }
+            // Send DELETE request to Flask backend
+            const response = await fetch(url, {
+            method: 'DELETE',
+            });
+
+            if (!response.ok) {
+            throw new Error('Failed to delete ');
+            }
+            await Swal.fire({
+                icon: 'success',
+                title: '¡Eliminado!',
+                text: 'El elemento ha sido eliminado.',
+            });
+            window.location.reload();
+
+        } catch (error) {
+            console.error('Error deleting object:', error);
+            alert('Error deleting object. Please try again.');
+        }
+
+
+
+    }
+
+
 };
 
     const handleSubmit = (e) => {
@@ -255,7 +296,12 @@ const handleDelete = async (id) => {
                 })
             });
             if(res.ok) {
-                alert("Objeto creado");
+                const { default: Swal } = await import('sweetalert2');
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Exito',
+                    text: 'El Objeto se creo',
+                });                
                 window.location.reload();
             }else{
                 alert("Error al registrar Objeto");
@@ -296,7 +342,7 @@ const handleDelete = async (id) => {
                     </svg>
                 </button>
                 
-                <button onClick={() => handleDelete(row.id)} className="btn-eliminar">
+                <button onClick={() => handleDelete(row.id,'objeto')} className="btn-eliminar">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none"  viewBox="0 0 69 14" className="svgIcon bin-top">
                         <g clipPath="url(#clip0_35_24)">
                         <path fill="black"  d="M20.8232 2.62734L19.9948 4.21304C19.8224 4.54309 19.4808 4.75 19.1085 4.75H4.92857C2.20246 4.75 0 6.87266 0 9.5C0 12.1273 2.20246 14.25 4.92857 14.25H64.0714C66.7975 14.25 69 12.1273 69 9.5C69 6.87266 66.7975 4.75 64.0714 4.75H49.8915C49.5192 4.75 49.1776 4.54309 49.0052 4.21305L48.1768 2.62734C47.3451 1.00938 45.6355 0 43.7719 0H25.2281C23.3645 0 21.6549 1.00938 20.8232 2.62734ZM64.0023 20.0648C64.0397 19.4882 63.5822 19 63.0044 19H5.99556C5.4178 19 4.96025 19.4882 4.99766 20.0648L8.19375 69.3203C8.44018 73.0758 11.6746 76 15.5712 76H53.4288C57.3254 76 60.5598 73.0758 60.8062 69.3203L64.0023 20.0648Z"></path>
@@ -324,7 +370,7 @@ const handleDelete = async (id) => {
         }
         if (selectedOption === "more") {
             return (
-                <button onClick={() => handleDelete(row.id)} className="btn-eliminar">
+                <button onClick={() => handleDelete(row.id,'renta')} className="btn-eliminar">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none"  viewBox="0 0 69 14" className="svgIcon bin-top">
                         <g clipPath="url(#clip0_35_24)">
                         <path fill="black"  d="M20.8232 2.62734L19.9948 4.21304C19.8224 4.54309 19.4808 4.75 19.1085 4.75H4.92857C2.20246 4.75 0 6.87266 0 9.5C0 12.1273 2.20246 14.25 4.92857 14.25H64.0714C66.7975 14.25 69 12.1273 69 9.5C69 6.87266 66.7975 4.75 64.0714 4.75H49.8915C49.5192 4.75 49.1776 4.54309 49.0052 4.21305L48.1768 2.62734C47.3451 1.00938 45.6355 0 43.7719 0H25.2281C23.3645 0 21.6549 1.00938 20.8232 2.62734ZM64.0023 20.0648C64.0397 19.4882 63.5822 19 63.0044 19H5.99556C5.4178 19 4.96025 19.4882 4.99766 20.0648L8.19375 69.3203C8.44018 73.0758 11.6746 76 15.5712 76H53.4288C57.3254 76 60.5598 73.0758 60.8062 69.3203L64.0023 20.0648Z"></path>
@@ -369,7 +415,7 @@ const handleDelete = async (id) => {
             { name: "ID", selector: row => row.id || row.ID, sortable: true },
             { name: "Nombre", selector: row => row.nombre || row.Nombre, sortable: true },
             { name: "Expediente", selector: row => row.expediente || row.Expediente || "", sortable: true },
-            { name: "Cantidad", selector: row => row.cantidad !== undefined ? row.cantidad : (row.Cantidad !== undefined ? row.Cantidad : ""), sortable: true },
+            { name: "Salon", selector: row => row.cantidad !== undefined ? row.cantidad : (row.Cantidad !== undefined ? row.Cantidad : ""), sortable: true },
             {
                 name: "Acciones",
                 cell: getActionsCell,

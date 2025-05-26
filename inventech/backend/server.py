@@ -20,7 +20,7 @@ INSERT_AREAS =("INSERT INTO Areas(nombre,id_organizacion) VALUES (%s,%s);")
 #Usuario/Objeto/Rentas
 INSERT_USER =("INSERT INTO Usuarios (Id, password,nombre,id_area,id_facultad,rol,status) VALUES (%s,%s,%s,%s,%s,%s,%s);")
 INSERT_OBJETO =("INSERT INTO Objetos (nombre,Descripcion,Cant,Cant_disp,Id_Area,Status) VALUES (%s,%s,%s,%s,%s,%s);")
-INSERT_RENTAS =("INSERT INTO Rentas (Id_usuario,Id_encargado,Salon,Id_Area,Status) VALUES (%s,%s,%s,%s,%s);")
+INSERT_RENTAS =("INSERT INTO Rentas (Id_usuario,Id_encargado,Salon,Id_Area,Status,id_objeto) VALUES (%s,%s,%s,%s,%s,%s);")
 
 
 #READ
@@ -44,6 +44,7 @@ SELECT_USUARIOS_UNO=("""SELECT * FROM Usuarios  WHERE Id = (%s)""")
 SELECT_OBJETOS=("""SELECT * FROM Objetos """)
 SELECT_OBJETOS_UNO_EDITAR=("""SELECT * FROM Objetos  WHERE nombre = (%s)""")
 SELECT_OBJETOS_UNO=("""SELECT id,nombre,descripcion,cant_disp FROM Objetos  WHERE id_area = (%s)""")
+SELECT_OBJETOS_UNO_RENTA=("""SELECT cant_disp FROM Objetos  WHERE nombre = (%s)""")
 SELECT_OBJETOS_CREATE=("""SELECT id,nombre,descripcion,cant_disp FROM Objetos  WHERE nombre = (%s)""")
 SELECT_OBJETOS_DISP=("""SELECT * FROM objetos WHERE cant_disp > 0 AND id_area = (%s)""")
 SELECT_RENTAS=("""SELECT * FROM Rentas """)
@@ -68,6 +69,7 @@ UPDATE_AREAS =("UPDATE Area SET nombre = (%s), id_organizacion = (%s) WHERE Id =
 
 UPDATE_USUARIO =("UPDATE Usuario SET Id = (%s), nombre = (%s),Id_facultad = (%s),Rol= (%s),Status = (%s) WHERE Id = (%s);")
 UPDATE_OBJETO =("UPDATE Objetos SET nombre = (%s), descripcion = (%s),cant = (%s),cant_disp= (%s),id_area = (%s),Status = (%s) WHERE Id = (%s);")
+UPDATE_OBJETO_RENTA =("UPDATE Objetos SET cant_disp= (%s) WHERE nombre = (%s);")
 UPDATE_RENTAS =("UPDATE Objetos SET Status = (%s) WHERE Id = (%s);")
 
 
@@ -695,39 +697,59 @@ def show_objetos():
 @app.route("/create_rentas",methods=["POST"])
 def create_rentas():
     data=request.get_json()
-    print(data)
-    #{'name': 'Cautin', 'expediente': '307083', 'detalles': 'A25', 'cantidad': '1', 'areaId': 1}
-    # if not data:
-    #     app.logger.info(f"No data")
-    #     return jsonify({"error": "No data provided"}), 400
-    # with connection.cursor() as cursor:
-    #     try:
-    #         nombre = data.get('name')
-    #         expeR = data.get('expediente')
-    #         cant = int(data.get('cantidad'))
-    #         #cant_disp = int(data.get('cantidad'))
-    #         detalles = data.get('detalles')
-    #         id_Area = int(data.get('areaId'))
-    #         Status= "Activo"
-    #         cursor.execute(INSERT_RENTAS, (nombre, expeR, cant, id_Area, Status))
-    #         connection.commit()
-    #         return {"Success": "Se creo la renta"}
-           
-    #     except Exception as e:
-    #         connection.rollback()
-    #         app.logger.error(f"Error creating renta: {e}")
-    #         return jsonify({"error": str(e)}), 500
-
-    return {"Nose":"nose"}
-
-@app.route("/delete_renta",methods=["POST"])
-def delete_renta():
-    data=request.get_json()
+    #print(data)
+    #{'name': 'Cautin', 'expediente': '307083', 'detalles': 'A25', 'cantidad': '10', 'enca_id': 3540, 'areaId': 1}
     if not data:
         app.logger.info(f"No data")
         return jsonify({"error": "No data provided"}), 400
+    with connection.cursor() as cursor:
+        try:
+            nombre = data.get('name')
+            expeR = data.get('expediente')
+            cant = int(data.get('cantidad'))
+            detalles = data.get('detalles')
+            enca_id = data.get('enca_id')
+            id_Area = int(data.get('areaId'))
+            Status= "Activo"
+            cursor.execute(SELECT_OBJETOS_UNO_RENTA,(nombre,))
+            cant_1 = cursor.fetchone()
+            cant_b = int(cant_1[0])
+            if (cant_b - cant) <0 :
+                return {"Error": "No hay suficientes Objetos"}
+            else:
+                cursor.execute(INSERT_RENTAS, (expeR,enca_id,detalles,id_Area, Status,nombre))
+                connection.commit()
+                new_cant = cant_b-cant
+                cursor.execute(UPDATE_OBJETO_RENTA,(new_cant,nombre))
+                connection.commit()
+                return {"Success": "Se creo la renta"}
+          
+        except Exception as e:
+            connection.rollback()
+            app.logger.error(f"Error creating renta: {e}")
+            return jsonify({"error": str(e)}), 500
 
     return {"Nose":"nose"}
+
+@app.route("/delete_renta/<int:id>",methods=["DELETE"])
+def delete_renta(id):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id FROM rentas WHERE id = %s", (id,))
+            if not cursor.fetchone():
+                return jsonify({"error": "Object not found"}), 404
+            cursor.execute("DELETE FROM rentas WHERE id = %s", (id,))
+            connection.commit()
+            return jsonify({"success": True}), 200
+    except Exception as e:
+        connection.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+
+
+
+
 
 
 @app.route("/update_renta",methods=["POST"])
