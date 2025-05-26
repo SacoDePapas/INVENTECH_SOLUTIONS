@@ -93,8 +93,9 @@ load_dotenv()
 
 
 app =  Flask(__name__)
-CORS(app)
-app.config["JWT_SECRET_KEY"] =os.getenv("JWT_SECRET") # Change this!
+CORS(app,supports_credentials=True)
+app.config["JWT_SECRET_KEY"] =os.getenv("JWT_SECRET") 
+app.config["JWT_TOKEN_LOCATION"] = ["headers"]
 jwt = JWTManager(app)
 url=os.getenv("DATABASE_URL")
 connection=psycopg2.connect(url)

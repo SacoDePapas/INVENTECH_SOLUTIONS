@@ -19,7 +19,8 @@ const ProfileCard = () => {
             const response = await fetch('http://localhost:5000/profile', {
                 method: 'GET',
                 headers: {
-                'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 }
             });
         
